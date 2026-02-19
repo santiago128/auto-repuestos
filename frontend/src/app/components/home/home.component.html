@@ -1,0 +1,48 @@
+<div class="hero">
+  <h1>Tu tienda de repuestos automotrices</h1>
+  <p>Encuentra los repuestos que necesitas para tu vehículo al mejor precio</p>
+  <button mat-raised-button color="accent" (click)="irACatalogo()">
+    <mat-icon>search</mat-icon> Ver Catálogo Completo
+  </button>
+</div>
+
+<section class="featured-section">
+  <h2>Buscar por Marca</h2>
+  <div class="marcas-row">
+    <button *ngFor="let m of marcas" class="marca-btn" (click)="buscarPorMarca(m.id)">
+      {{ m.nombre }}
+    </button>
+  </div>
+</section>
+
+<section class="featured-section">
+  <h2>Repuestos Destacados</h2>
+  <div class="productos-grid">
+    <mat-card *ngFor="let r of featuredRepuestos" class="producto-card" routerLink="/repuesto/{{r.id}}">
+      <mat-card-header>
+        <mat-card-title>{{ r.nombre }}</mat-card-title>
+        <mat-card-subtitle>
+          <span class="marca-chip">{{ r.marca?.nombre }}</span>
+          <span *ngIf="r.modelo"> · {{ r.modelo?.nombre }}</span>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <img mat-card-image
+           [src]="r.imagenUrl || 'assets/repuesto-default.png'"
+           [alt]="r.nombre"
+           onerror="this.src='assets/repuesto-default.png'">
+      <mat-card-content>
+        <p class="precio-tag">${{ r.precio | number:'1.2-2' }}</p>
+        <p [class.stock-ok]="r.stock > 5"
+           [class.stock-bajo]="r.stock > 0 && r.stock <= 5"
+           [class.stock-agotado]="r.stock === 0">
+          {{ r.stock > 0 ? 'Stock: ' + r.stock : 'Agotado' }}
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" routerLink="/repuesto/{{r.id}}">
+          Ver Detalle
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</section>

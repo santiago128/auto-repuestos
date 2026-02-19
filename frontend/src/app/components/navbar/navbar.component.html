@@ -1,0 +1,37 @@
+<mat-toolbar color="primary">
+  <a class="brand" routerLink="/">AutoRepuestos</a>
+
+  <span class="spacer"></span>
+
+  <button mat-button routerLink="/catalogo">
+    <mat-icon>directions_car</mat-icon> Catálogo
+  </button>
+
+  <button mat-icon-button routerLink="/carrito"
+          [matBadge]="totalItems" matBadgeColor="warn"
+          [matBadgeHidden]="totalItems === 0"
+          matTooltip="Carrito de compras">
+    <mat-icon>shopping_cart</mat-icon>
+  </button>
+
+  <ng-container *ngIf="!session; else loggedIn">
+    <button mat-button routerLink="/login">Iniciar Sesión</button>
+    <button mat-raised-button routerLink="/register">Registrarse</button>
+  </ng-container>
+
+  <ng-template #loggedIn>
+    <span class="nav-user">Hola, {{ session!.nombre }}</span>
+
+    <button mat-button routerLink="/mis-facturas" matTooltip="Mis pedidos">
+      <mat-icon>receipt</mat-icon>
+    </button>
+
+    <button *ngIf="session!.rol === 'ADMIN'" mat-button routerLink="/admin" color="accent">
+      <mat-icon>admin_panel_settings</mat-icon> Admin
+    </button>
+
+    <button mat-button (click)="logout()" matTooltip="Cerrar sesión">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </ng-template>
+</mat-toolbar>

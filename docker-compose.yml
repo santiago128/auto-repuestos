@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: repuestos-db
+    environment:
+      POSTGRES_DB: repuestos_db
+      POSTGRES_USER: repuestos_user
+      POSTGRES_PASSWORD: repuestos_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    networks:
+      - repuestos-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U repuestos_user -d repuestos_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    container_name: repuestos-backend
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/repuestos_db
+      SPRING_DATASOURCE_USERNAME: repuestos_user
+      SPRING_DATASOURCE_PASSWORD: repuestos_pass
+      JWT_SECRET: RepuestosAutosPlatformSecretKey2024XYZ
+      UPLOAD_DIR: /app/uploads
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - repuestos-network
+    restart: on-failure
+
+  frontend:
+    build: ./frontend
+    container_name: repuestos-frontend
+    ports:
+      - "4200:80"
+    volumes:
+      - uploads_data:/usr/share/nginx/uploads
+    depends_on:
+      - backend
+    networks:
+      - repuestos-network
+
+volumes:
+  postgres_data:
+  uploads_data:
+
+networks:
+  repuestos-network:
+    driver: bridge

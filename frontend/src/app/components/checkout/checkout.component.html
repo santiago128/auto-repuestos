@@ -1,0 +1,78 @@
+<!-- Pedido exitoso -->
+<div *ngIf="facturaCreada" style="text-align:center;padding:40px">
+  <mat-icon style="font-size:80px;width:80px;height:80px;color:#4caf50">check_circle</mat-icon>
+  <h2 style="color:#4caf50;margin-top:16px">¡Pedido realizado con éxito!</h2>
+  <p style="font-size:1.1em;margin:12px 0">
+    Número de factura: <strong>{{ facturaCreada.numeroFactura }}</strong>
+  </p>
+  <p>Total: <strong>${{ facturaCreada.total | number:'1.2-2' }}</strong></p>
+  <p style="color:#666;margin-top:8px">
+    Hemos enviado la confirmación a tu correo electrónico.
+  </p>
+  <div style="margin-top:24px;display:flex;gap:12px;justify-content:center">
+    <button mat-raised-button color="primary" routerLink="/mis-facturas">
+      Ver mis pedidos
+    </button>
+    <button mat-stroked-button routerLink="/catalogo">
+      Seguir comprando
+    </button>
+  </div>
+</div>
+
+<!-- Formulario de checkout -->
+<div *ngIf="!facturaCreada">
+  <h1 style="margin-bottom:20px">Finalizar Compra</h1>
+
+  <div *ngIf="procesando" class="procesando">
+    <mat-spinner diameter="50" style="margin:auto"></mat-spinner>
+    <p style="margin-top:16px;color:#666">Procesando tu pedido...</p>
+  </div>
+
+  <div *ngIf="!procesando" class="checkout-grid">
+    <!-- Formulario de envío -->
+    <div>
+      <h2 style="margin-bottom:16px">Datos de Envío</h2>
+      <form [formGroup]="form" (ngSubmit)="confirmarPedido()">
+        <mat-form-field class="form-full-width" style="margin-bottom:16px">
+          <mat-label>Dirección de entrega</mat-label>
+          <textarea matInput formControlName="direccionEnvio" rows="3"
+                    placeholder="Calle, número, ciudad, provincia..."></textarea>
+          <mat-error>La dirección es requerida</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="form-full-width" style="margin-bottom:24px">
+          <mat-label>Observaciones (opcional)</mat-label>
+          <textarea matInput formControlName="observaciones" rows="2"
+                    placeholder="Instrucciones especiales para la entrega..."></textarea>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit"
+                [disabled]="form.invalid || items.length === 0"
+                style="width:100%;height:50px;font-size:1.1em">
+          <mat-icon>payment</mat-icon> Confirmar Pedido
+        </button>
+      </form>
+    </div>
+
+    <!-- Resumen del pedido -->
+    <div class="resumen-card">
+      <h2 style="margin-bottom:16px">Resumen del Pedido</h2>
+      <div *ngFor="let item of items" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee">
+        <span>{{ item.repuesto.nombre }} x{{ item.cantidad }}</span>
+        <strong>${{ (item.repuesto.precio * item.cantidad) | number:'1.2-2' }}</strong>
+      </div>
+      <div style="margin-top:16px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span>Subtotal:</span><span>${{ subtotal | number:'1.2-2' }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span>IVA (12%):</span><span>${{ iva | number:'1.2-2' }}</span>
+        </div>
+        <mat-divider style="margin:12px 0"></mat-divider>
+        <div style="display:flex;justify-content:space-between;font-size:1.3em;font-weight:700;color:#1565C0">
+          <span>TOTAL:</span><span>${{ total | number:'1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

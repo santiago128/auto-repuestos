@@ -1,0 +1,229 @@
+<h1 style="margin-bottom:20px">Panel de Administración</h1>
+
+<mat-tab-group>
+
+  <!-- TAB: Repuestos -->
+  <mat-tab label="Repuestos">
+    <div class="tab-content">
+      <div class="admin-header">
+        <h2 class="section-title">Gestión de Repuestos</h2>
+        <button mat-raised-button color="primary" (click)="mostrarFormRepuesto = !mostrarFormRepuesto">
+          <mat-icon>add</mat-icon> Nuevo Repuesto
+        </button>
+      </div>
+
+      <!-- Formulario repuesto -->
+      <mat-card *ngIf="mostrarFormRepuesto" style="margin-bottom:20px;padding:20px">
+        <h3>{{ repuestoEditando ? 'Editar Repuesto' : 'Nuevo Repuesto' }}</h3>
+        <form [formGroup]="repuestoForm" (ngSubmit)="guardarRepuesto()">
+          <div class="form-grid">
+            <mat-form-field>
+              <mat-label>Código</mat-label>
+              <input matInput formControlName="codigo" [readonly]="!!repuestoEditando">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="nombre">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Precio</mat-label>
+              <input matInput type="number" formControlName="precio" step="0.01">
+              <span matPrefix>$ </span>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Stock</mat-label>
+              <input matInput type="number" formControlName="stock">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Marca</mat-label>
+              <mat-select formControlName="marcaId" (selectionChange)="onMarcaChange($event.value)">
+                <mat-option *ngFor="let m of marcas" [value]="m.id">{{ m.nombre }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Modelo</mat-label>
+              <mat-select formControlName="modeloId">
+                <mat-option [value]="null">N/A</mat-option>
+                <mat-option *ngFor="let m of modelos" [value]="m.id">{{ m.nombre }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Categoría</mat-label>
+              <mat-select formControlName="categoriaId">
+                <mat-option [value]="null">Sin categoría</mat-option>
+                <mat-option *ngFor="let c of categorias" [value]="c.id">{{ c.nombre }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- Upload de imagen -->
+          <div class="upload-area">
+            <div *ngIf="imagenPreview; else sinImagen">
+              <img [src]="imagenPreview" class="img-preview" alt="Preview">
+            </div>
+            <ng-template #sinImagen>
+              <div class="img-placeholder">
+                <mat-icon>image</mat-icon>
+              </div>
+            </ng-template>
+            <div>
+              <button mat-stroked-button type="button" (click)="fileInput.click()" [disabled]="uploadingImagen">
+                <mat-icon>upload</mat-icon>
+                {{ uploadingImagen ? 'Subiendo...' : 'Seleccionar imagen' }}
+              </button>
+              <input #fileInput type="file" accept="image/*" style="display:none" (change)="onArchivoSeleccionado($event)">
+              <p style="font-size:0.8em;color:#888;margin:4px 0 0">
+                {{ archivoSeleccionado ? archivoSeleccionado.name : (repuestoForm.get('imagenUrl')?.value || 'Sin imagen') }}
+              </p>
+            </div>
+          </div>
+
+          <mat-form-field style="width:100%;margin-top:8px">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput formControlName="descripcion" rows="2"></textarea>
+          </mat-form-field>
+          <div style="display:flex;gap:12px;margin-top:12px">
+            <button mat-raised-button color="primary" type="submit" [disabled]="repuestoForm.invalid || uploadingImagen">
+              <mat-icon *ngIf="uploadingImagen">hourglass_empty</mat-icon>
+              {{ uploadingImagen ? 'Subiendo imagen...' : 'Guardar' }}
+            </button>
+            <button mat-stroked-button type="button" (click)="cancelarFormRepuesto()" [disabled]="uploadingImagen">Cancelar</button>
+          </div>
+        </form>
+      </mat-card>
+
+      <!-- Tabla repuestos -->
+      <mat-table [dataSource]="repuestos" class="tabla-repuestos">
+        <ng-container matColumnDef="imagen">
+          <mat-header-cell *matHeaderCellDef style="max-width:60px"></mat-header-cell>
+          <mat-cell *matCellDef="let r" style="max-width:60px">
+            <img *ngIf="r.imagenUrl" [src]="r.imagenUrl" class="thumb-tabla" [alt]="r.nombre">
+            <mat-icon *ngIf="!r.imagenUrl" style="color:#ccc">image_not_supported</mat-icon>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="codigo">
+          <mat-header-cell *matHeaderCellDef>Código</mat-header-cell>
+          <mat-cell *matCellDef="let r"><code>{{ r.codigo }}</code></mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="nombre">
+          <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell>
+          <mat-cell *matCellDef="let r">{{ r.nombre }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="marca">
+          <mat-header-cell *matHeaderCellDef>Marca</mat-header-cell>
+          <mat-cell *matCellDef="let r"><span class="marca-chip">{{ r.marca?.nombre }}</span></mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="modelo">
+          <mat-header-cell *matHeaderCellDef>Modelo</mat-header-cell>
+          <mat-cell *matCellDef="let r">{{ r.modelo?.nombre || '—' }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="precio">
+          <mat-header-cell *matHeaderCellDef>Precio</mat-header-cell>
+          <mat-cell *matCellDef="let r" class="precio-tag">${{ r.precio | number:'1.2-2' }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="stock">
+          <mat-header-cell *matHeaderCellDef>Stock</mat-header-cell>
+          <mat-cell *matCellDef="let r"
+                    [class.stock-ok]="r.stock > 5"
+                    [class.stock-bajo]="r.stock > 0 && r.stock <= 5"
+                    [class.stock-agotado]="r.stock === 0">
+            {{ r.stock }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="acciones">
+          <mat-header-cell *matHeaderCellDef>Acciones</mat-header-cell>
+          <mat-cell *matCellDef="let r">
+            <button mat-icon-button color="primary" (click)="editarRepuesto(r)" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="eliminarRepuesto(r)" matTooltip="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="columnas"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: columnas;"></mat-row>
+      </mat-table>
+    </div>
+  </mat-tab>
+
+  <!-- TAB: Marcas -->
+  <mat-tab label="Marcas">
+    <div class="tab-content">
+      <div class="admin-header">
+        <h2 class="section-title">Gestión de Marcas</h2>
+        <button mat-raised-button color="primary" (click)="mostrarFormMarca = !mostrarFormMarca">
+          <mat-icon>add</mat-icon> Nueva Marca
+        </button>
+      </div>
+      <mat-card *ngIf="mostrarFormMarca" style="margin-bottom:20px;padding:20px">
+        <form [formGroup]="marcaForm" (ngSubmit)="guardarMarca()">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <mat-form-field>
+              <mat-label>Nombre de la marca</mat-label>
+              <input matInput formControlName="nombre">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>País de origen</mat-label>
+              <input matInput formControlName="paisOrigen">
+            </mat-form-field>
+            <button mat-raised-button color="primary" type="submit" [disabled]="marcaForm.invalid">Guardar</button>
+            <button mat-stroked-button type="button" (click)="mostrarFormMarca = false">Cancelar</button>
+          </div>
+        </form>
+      </mat-card>
+      <div style="display:flex;flex-wrap:wrap;gap:12px">
+        <mat-card *ngFor="let m of marcas" style="padding:12px 20px;min-width:200px">
+          <strong>{{ m.nombre }}</strong>
+          <p style="color:#888;font-size:.85em">{{ m.paisOrigen || 'Origen no especificado' }}</p>
+        </mat-card>
+      </div>
+    </div>
+  </mat-tab>
+
+  <!-- TAB: Modelos -->
+  <mat-tab label="Modelos">
+    <div class="tab-content">
+      <div class="admin-header">
+        <h2 class="section-title">Gestión de Modelos</h2>
+        <button mat-raised-button color="primary" (click)="mostrarFormModelo = !mostrarFormModelo">
+          <mat-icon>add</mat-icon> Nuevo Modelo
+        </button>
+      </div>
+      <mat-card *ngIf="mostrarFormModelo" style="margin-bottom:20px;padding:20px">
+        <form [formGroup]="modeloForm" (ngSubmit)="guardarModelo()">
+          <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+            <mat-form-field>
+              <mat-label>Nombre del modelo</mat-label>
+              <input matInput formControlName="nombre">
+            </mat-form-field>
+            <mat-form-field style="width:120px">
+              <mat-label>Año inicio</mat-label>
+              <input matInput type="number" formControlName="anioInicio">
+            </mat-form-field>
+            <mat-form-field style="width:120px">
+              <mat-label>Año fin</mat-label>
+              <input matInput type="number" formControlName="anioFin">
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Marca</mat-label>
+              <mat-select formControlName="marcaId">
+                <mat-option *ngFor="let m of marcas" [value]="m.id">{{ m.nombre }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-raised-button color="primary" type="submit" [disabled]="modeloForm.invalid">Guardar</button>
+            <button mat-stroked-button type="button" (click)="mostrarFormModelo = false">Cancelar</button>
+          </div>
+        </form>
+      </mat-card>
+      <mat-table [dataSource]="modelos" style="width:100%">
+        <ng-container matColumnDef="nombre"><mat-header-cell *matHeaderCellDef>Modelo</mat-header-cell><mat-cell *matCellDef="let m">{{ m.nombre }}</mat-cell></ng-container>
+        <ng-container matColumnDef="marca"><mat-header-cell *matHeaderCellDef>Marca</mat-header-cell><mat-cell *matCellDef="let m"><span class="marca-chip">{{ m.marca?.nombre }}</span></mat-cell></ng-container>
+        <ng-container matColumnDef="anios"><mat-header-cell *matHeaderCellDef>Años</mat-header-cell><mat-cell *matCellDef="let m">{{ m.anioInicio }} - {{ m.anioFin || 'actual' }}</mat-cell></ng-container>
+        <mat-header-row *matHeaderRowDef="['nombre','marca','anios']"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: ['nombre','marca','anios'];"></mat-row>
+      </mat-table>
+    </div>
+  </mat-tab>
+
+</mat-tab-group>

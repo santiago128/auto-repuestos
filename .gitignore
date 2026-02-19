@@ -1,0 +1,26 @@
+# Variables de entorno - NUNCA subir al repo
+.env
+
+# Docker volumes locales
+postgres_data/
+uploads_data/
+
+# Maven
+backend/target/
+backend/.mvn/
+backend/*.iml
+
+# Node / Angular
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

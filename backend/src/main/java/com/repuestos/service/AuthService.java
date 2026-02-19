@@ -1,0 +1,80 @@
+package com.repuestos.service;
+
+import com.repuestos.config.JwtUtil;
+import com.repuestos.dto.LoginRequest;
+import com.repuestos.dto.RegisterRequest;
+import com.repuestos.model.Usuario;
+import com.repuestos.repository.UsuarioRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final AuthenticationManager authManager;
+    private final UserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+    private final UsuarioRepository usuarioRepository;
+
+    @PersistenceContext
+    private EntityManager em;
+
+    public Map<String, Object> login(LoginRequest req) {
+        authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(req.getEmail());
+        Usuario usuario = usuarioRepository.findByEmail(req.getEmail()).orElseThrow();
+
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("rol", usuario.getRol().getNombre());
+        extraClaims.put("nombre", usuario.getNombre() + " " + usuario.getApellido());
+        extraClaims.put("id", usuario.getId());
+
+        String token = jwtUtil.generateToken(userDetails, extraClaims);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("email", usuario.getEmail());
+        response.put("nombre", usuario.getNombre());
+        response.put("apellido", usuario.getApellido());
+        response.put("rol", usuario.getRol().getNombre());
+        response.put("id", usuario.getId());
+        return response;
+    }
+
+    @Transactional
+    public Map<String, Object> register(RegisterRequest req) {
+        String hashedPassword = passwordEncoder.encode(req.getPassword());
+
+        @SuppressWarnings("unchecked")
+        var result = (Object[]) em.createNativeQuery(
+                "SELECT * FROM sp_registrar_usuario(:nombre, :apellido, :email, :password, :telefono, :direccion)")
+                .setParameter("nombre", req.getNombre())
+                .setParameter("apellido", req.getApellido())
+                .setParameter("email", req.getEmail())
+                .setParameter("password", hashedPassword)
+                .setParameter("telefono", req.getTelefono())
+                .setParameter("direccion", req.getDireccion())
+                .getSingleResult();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", result[0]);
+        response.put("email", result[1]);
+        response.put("mensaje", result[2]);
+        return response;
+    }
+}

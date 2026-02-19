@@ -1,0 +1,85 @@
+<h1>Catálogo de Repuestos</h1>
+
+<!-- Filtros -->
+<form [formGroup]="filtroForm" (ngSubmit)="buscar()" class="filtros">
+  <mat-form-field class="filtro-field">
+    <mat-label>Buscar por nombre</mat-label>
+    <input matInput formControlName="nombre" placeholder="Ej: filtro de aceite">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <mat-form-field class="filtro-field">
+    <mat-label>Marca</mat-label>
+    <mat-select formControlName="marcaId">
+      <mat-option [value]="null">Todas</mat-option>
+      <mat-option *ngFor="let m of marcas" [value]="m.id">{{ m.nombre }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="filtro-field">
+    <mat-label>Modelo</mat-label>
+    <mat-select formControlName="modeloId" [disabled]="!filtroForm.value.marcaId">
+      <mat-option [value]="null">Todos</mat-option>
+      <mat-option *ngFor="let m of modelos" [value]="m.id">{{ m.nombre }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="filtro-field">
+    <mat-label>Categoría</mat-label>
+    <mat-select formControlName="categoriaId">
+      <mat-option [value]="null">Todas</mat-option>
+      <mat-option *ngFor="let c of categorias" [value]="c.id">{{ c.nombre }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" type="submit">
+    <mat-icon>search</mat-icon> Buscar
+  </button>
+  <button mat-stroked-button type="button" (click)="limpiarFiltros()">
+    <mat-icon>clear</mat-icon> Limpiar
+  </button>
+</form>
+
+<!-- Resultados -->
+<div *ngIf="cargando" style="text-align:center;padding:40px">
+  <mat-spinner diameter="40" style="margin:auto"></mat-spinner>
+</div>
+
+<div *ngIf="!cargando && repuestos.length === 0" class="no-results">
+  <mat-icon style="font-size:48px;width:48px;height:48px;color:#ccc">search_off</mat-icon>
+  <p>No se encontraron repuestos con los filtros seleccionados.</p>
+</div>
+
+<div class="productos-grid" *ngIf="!cargando">
+  <mat-card *ngFor="let r of repuestos" class="producto-card" routerLink="/repuesto/{{r.id}}">
+    <mat-card-header>
+      <mat-card-title>{{ r.nombre }}</mat-card-title>
+      <mat-card-subtitle>
+        <span class="marca-chip">{{ r.marca?.nombre }}</span>
+        <span *ngIf="r.modelo"> · {{ r.modelo?.nombre }}</span>
+        <span *ngIf="r.categoria"> · {{ r.categoria?.nombre }}</span>
+      </mat-card-subtitle>
+    </mat-card-header>
+    <img mat-card-image
+         [src]="r.imagenUrl || 'assets/repuesto-default.png'"
+         [alt]="r.nombre"
+         onerror="this.src='assets/repuesto-default.png'">
+    <mat-card-content>
+      <p style="color:#666;font-size:.85em;margin-bottom:8px">Cód: {{ r.codigo }}</p>
+      <p class="precio-tag">${{ r.precio | number:'1.2-2' }}</p>
+      <p [class.stock-ok]="r.stock > 5"
+         [class.stock-bajo]="r.stock > 0 && r.stock <= 5"
+         [class.stock-agotado]="r.stock === 0">
+        {{ r.stock > 0 ? 'En stock: ' + r.stock : 'Agotado' }}
+      </p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button color="primary" routerLink="/repuesto/{{r.id}}">Detalle</button>
+      <button mat-raised-button color="primary"
+              [disabled]="r.stock === 0"
+              (click)="$event.stopPropagation(); agregarAlCarrito(r)">
+        <mat-icon>add_shopping_cart</mat-icon>
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

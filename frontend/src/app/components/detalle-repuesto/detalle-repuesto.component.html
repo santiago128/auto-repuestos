@@ -1,0 +1,68 @@
+<div *ngIf="cargando" style="text-align:center;padding:60px">
+  <mat-spinner diameter="40" style="margin:auto"></mat-spinner>
+</div>
+
+<div *ngIf="repuesto && !cargando">
+  <button mat-button routerLink="/catalogo" style="margin-bottom:16px">
+    <mat-icon>arrow_back</mat-icon> Volver al catálogo
+  </button>
+
+  <div class="detalle-container">
+    <div>
+      <img class="detalle-img"
+           [src]="repuesto.imagenUrl || 'assets/repuesto-default.png'"
+           [alt]="repuesto.nombre"
+           onerror="this.src='assets/repuesto-default.png'">
+    </div>
+
+    <div>
+      <h1 style="font-size:1.8em;margin-bottom:8px">{{ repuesto.nombre }}</h1>
+      <p style="color:#888">Código: {{ repuesto.codigo }}</p>
+
+      <div class="precio-grande">${{ repuesto.precio | number:'1.2-2' }}</div>
+
+      <div class="info-row">
+        <strong>Marca:</strong> {{ repuesto.marca?.nombre }}
+        <span *ngIf="repuesto.marca?.paisOrigen"> ({{ repuesto.marca?.paisOrigen }})</span>
+      </div>
+      <div class="info-row" *ngIf="repuesto.modelo">
+        <strong>Modelo:</strong> {{ repuesto.modelo?.nombre }}
+        <span *ngIf="repuesto.modelo?.anioInicio">
+          ({{ repuesto.modelo?.anioInicio }} - {{ repuesto.modelo?.anioFin || 'actual' }})
+        </span>
+      </div>
+      <div class="info-row" *ngIf="repuesto.categoria">
+        <strong>Categoría:</strong> {{ repuesto.categoria?.nombre }}
+      </div>
+      <div class="info-row">
+        <strong>Disponibilidad:</strong>
+        <span [class.stock-ok]="repuesto.stock > 5"
+              [class.stock-bajo]="repuesto.stock > 0 && repuesto.stock <= 5"
+              [class.stock-agotado]="repuesto.stock === 0">
+          {{ repuesto.stock > 0 ? repuesto.stock + ' unidades en stock' : 'Agotado' }}
+        </span>
+      </div>
+
+      <mat-divider style="margin:16px 0"></mat-divider>
+
+      <p *ngIf="repuesto.descripcion" style="color:#555;line-height:1.6">
+        {{ repuesto.descripcion }}
+      </p>
+
+      <div style="display:flex;align-items:center;gap:16px;margin-top:20px">
+        <mat-form-field style="width:80px">
+          <mat-label>Cant.</mat-label>
+          <input matInput type="number" [(ngModel)]="cantidad"
+                 [min]="1" [max]="repuesto.stock">
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" style="height:50px"
+                [disabled]="repuesto.stock === 0"
+                (click)="agregarAlCarrito()">
+          <mat-icon>add_shopping_cart</mat-icon>
+          Agregar al carrito
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

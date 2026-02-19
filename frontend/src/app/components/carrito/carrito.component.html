@@ -1,0 +1,82 @@
+<h1 style="margin-bottom:20px">Carrito de Compras</h1>
+
+<div *ngIf="(carrito.items$ | async)?.length === 0" class="empty-cart">
+  <mat-icon style="font-size:64px;width:64px;height:64px;color:#ddd">shopping_cart</mat-icon>
+  <h2>Tu carrito está vacío</h2>
+  <p>Explora nuestro catálogo y agrega productos</p>
+  <button mat-raised-button color="primary" routerLink="/catalogo" style="margin-top:16px">
+    Ir al Catálogo
+  </button>
+</div>
+
+<div *ngIf="(carrito.items$ | async)?.length! > 0">
+  <mat-table [dataSource]="(carrito.items$ | async)!" class="carrito-tabla">
+
+    <ng-container matColumnDef="producto">
+      <mat-header-cell *matHeaderCellDef>Producto</mat-header-cell>
+      <mat-cell *matCellDef="let item">
+        <div>
+          <strong>{{ item.repuesto.nombre }}</strong><br>
+          <small class="marca-chip">{{ item.repuesto.marca?.nombre }}</small>
+        </div>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="precio">
+      <mat-header-cell *matHeaderCellDef>Precio</mat-header-cell>
+      <mat-cell *matCellDef="let item">${{ item.repuesto.precio | number:'1.2-2' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="cantidad">
+      <mat-header-cell *matHeaderCellDef>Cantidad</mat-header-cell>
+      <mat-cell *matCellDef="let item">
+        <button mat-icon-button (click)="actualizarCantidad(item, -1)">
+          <mat-icon>remove</mat-icon>
+        </button>
+        <span style="min-width:30px;text-align:center;display:inline-block">{{ item.cantidad }}</span>
+        <button mat-icon-button (click)="actualizarCantidad(item, 1)"
+                [disabled]="item.cantidad >= item.repuesto.stock">
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="subtotal">
+      <mat-header-cell *matHeaderCellDef>Subtotal</mat-header-cell>
+      <mat-cell *matCellDef="let item" class="precio-tag">
+        ${{ (item.repuesto.precio * item.cantidad) | number:'1.2-2' }}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="acciones">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let item">
+        <button mat-icon-button color="warn" (click)="eliminar(item)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+
+  <div class="carrito-resumen" style="margin-top:24px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+      <span>Subtotal:</span><strong>${{ carrito.subtotal | number:'1.2-2' }}</strong>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+      <span>IVA (12%):</span><strong>${{ carrito.iva | number:'1.2-2' }}</strong>
+    </div>
+    <mat-divider style="margin:12px 0"></mat-divider>
+    <div class="total-row" style="display:flex;justify-content:space-between;margin-bottom:20px">
+      <span>TOTAL:</span><span>${{ carrito.total | number:'1.2-2' }}</span>
+    </div>
+    <button mat-raised-button color="primary" style="width:100%" (click)="irAlCheckout()">
+      <mat-icon>payment</mat-icon> Proceder al pago
+    </button>
+    <button mat-stroked-button style="width:100%;margin-top:8px" (click)="carrito.vaciar()">
+      Vaciar carrito
+    </button>
+  </div>
+</div>

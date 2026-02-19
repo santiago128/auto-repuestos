@@ -1,0 +1,45 @@
+<h1 style="margin-bottom:20px">Mis Pedidos</h1>
+
+<div *ngIf="cargando" style="text-align:center;padding:40px">
+  <mat-spinner diameter="40" style="margin:auto"></mat-spinner>
+</div>
+
+<div *ngIf="!cargando && facturas.length === 0" style="text-align:center;padding:60px;color:#888">
+  <mat-icon style="font-size:64px;width:64px;height:64px;color:#ddd">receipt_long</mat-icon>
+  <h2>Aún no tienes pedidos</h2>
+  <button mat-raised-button color="primary" routerLink="/catalogo" style="margin-top:16px">
+    Ver Catálogo
+  </button>
+</div>
+
+<div *ngFor="let f of facturas">
+  <div class="factura-card" (click)="verDetalle(f)">
+    <div class="factura-header">
+      <div>
+        <strong style="font-size:1.1em">{{ f.numeroFactura }}</strong>
+        <p style="color:#666;font-size:.9em;margin-top:4px">
+          {{ f.fecha | date:'dd/MM/yyyy HH:mm' }}
+        </p>
+      </div>
+      <div style="text-align:right">
+        <span class="estado-pagada">{{ f.estado }}</span>
+        <p class="precio-tag" style="margin-top:4px">${{ f.total | number:'1.2-2' }}</p>
+      </div>
+    </div>
+
+    <!-- Detalle expandible -->
+    <div *ngIf="facturaSeleccionada?.id === f.id" style="margin-top:16px;border-top:1px solid #eee;padding-top:16px">
+      <div *ngFor="let d of f.detalles" style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5">
+        <span>{{ d.repuesto?.nombre }} x{{ d.cantidad }}</span>
+        <span>${{ d.subtotal | number:'1.2-2' }}</span>
+      </div>
+      <div style="margin-top:12px;text-align:right">
+        <small>Subtotal: ${{ f.subtotal | number:'1.2-2' }} + IVA: ${{ f.iva | number:'1.2-2' }}</small>
+        <p *ngIf="f.direccionEnvio" style="color:#666;margin-top:4px">
+          <mat-icon style="font-size:16px;vertical-align:middle">local_shipping</mat-icon>
+          {{ f.direccionEnvio }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

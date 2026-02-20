@@ -66,8 +66,8 @@ import { Component } from '@angular/core';
       display: flex;
       align-items: center;
       gap: 12px;
-      mat-icon { font-size: 2rem; width: 2rem; height: 2rem; opacity: .85; }
     }
+    .footer-brand mat-icon { font-size: 2rem; width: 2rem; height: 2rem; opacity: .85; }
     .footer-name {
       display: block;
       font-size: 1.05rem;

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/repuestos")
@@ -19,11 +20,19 @@ public class RepuestoController {
     private final RepuestoService repuestoService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Repuesto>>> listar(
+    public ResponseEntity<ApiResponse<Object>> listar(
             @RequestParam(required = false) Integer marcaId,
             @RequestParam(required = false) Integer modeloId,
             @RequestParam(required = false) Integer categoriaId,
-            @RequestParam(required = false) String nombre) {
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(defaultValue = "12") int size) {
+
+        if (page != null) {
+            Map<String, Object> paginado = repuestoService.buscarPaginado(
+                    marcaId, modeloId, categoriaId, nombre, page, size);
+            return ResponseEntity.ok(ApiResponse.ok("Repuestos obtenidos", paginado));
+        }
 
         List<Repuesto> repuestos = (marcaId != null || modeloId != null || categoriaId != null || nombre != null)
                 ? repuestoService.buscar(marcaId, modeloId, categoriaId, nombre)
@@ -35,6 +44,11 @@ public class RepuestoController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Repuesto>> obtener(@PathVariable Integer id) {
         return ResponseEntity.ok(ApiResponse.ok("Repuesto obtenido", repuestoService.obtenerPorId(id)));
+    }
+
+    @GetMapping("/{id}/relacionados")
+    public ResponseEntity<ApiResponse<List<Repuesto>>> relacionados(@PathVariable Integer id) {
+        return ResponseEntity.ok(ApiResponse.ok("Relacionados obtenidos", repuestoService.obtenerRelacionados(id)));
     }
 
     @PostMapping

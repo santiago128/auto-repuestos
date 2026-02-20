@@ -26,6 +26,14 @@
       <mat-icon>receipt</mat-icon>
     </button>
 
+    <button mat-icon-button routerLink="/favoritos" matTooltip="Mis favoritos">
+      <mat-icon>favorite</mat-icon>
+    </button>
+
+    <button mat-icon-button routerLink="/perfil" matTooltip="Mi perfil">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+
     <button *ngIf="session!.rol === 'ADMIN'" mat-button routerLink="/admin" color="accent">
       <mat-icon>admin_panel_settings</mat-icon> Admin
     </button>

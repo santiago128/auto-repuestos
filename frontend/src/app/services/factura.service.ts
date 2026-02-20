@@ -20,4 +20,23 @@ export class FacturaService {
   obtenerFactura(id: number): Observable<any> {
     return this.http.get<any>(`${this.API}/${id}`);
   }
+
+  descargarPdf(facturaId: number): void {
+    this.http.get(`${this.API}/${facturaId}/pdf`, { responseType: 'blob' }).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `factura-${facturaId}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
+
+  cambiarEstado(id: number, estado: string): Observable<any> {
+    return this.http.put<any>(`${this.API}/${id}/estado`, { estado });
+  }
+
+  todasLasFacturas(): Observable<any> {
+    return this.http.get<any>(`${this.API}/admin/todas`);
+  }
 }

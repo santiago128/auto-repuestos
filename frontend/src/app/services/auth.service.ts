@@ -6,6 +6,7 @@ import { LoginRequest, RegisterRequest, UsuarioSession } from '../models/auth.mo
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly API = '/api/auth';
+  private readonly USUARIOS_API = '/api/usuarios';
   private readonly SESSION_KEY = 'repuestos_session';
 
   private sessionSubject = new BehaviorSubject<UsuarioSession | null>(this.loadSession());
@@ -27,6 +28,26 @@ export class AuthService {
 
   register(req: RegisterRequest): Observable<any> {
     return this.http.post<any>(`${this.API}/register`, req);
+  }
+
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post<any>(`${this.API}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, nuevaPassword: string): Observable<any> {
+    return this.http.post<any>(`${this.API}/reset-password`, { token, nuevaPassword });
+  }
+
+  getPerfil(): Observable<any> {
+    return this.http.get<any>(`${this.USUARIOS_API}/perfil`);
+  }
+
+  actualizarPerfil(data: { nombre: string; apellido: string; telefono?: string; direccion?: string }): Observable<any> {
+    return this.http.put<any>(`${this.USUARIOS_API}/perfil`, data);
+  }
+
+  cambiarPassword(passwordActual: string, nuevaPassword: string): Observable<any> {
+    return this.http.put<any>(`${this.USUARIOS_API}/cambiar-password`, { passwordActual, nuevaPassword });
   }
 
   logout(): void {

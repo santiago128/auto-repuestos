@@ -147,6 +147,60 @@
     </div>
   </mat-tab>
 
+  <!-- TAB: Pedidos -->
+  <mat-tab label="Pedidos">
+    <div class="tab-content">
+      <div class="admin-header">
+        <h2 class="section-title">Gestión de Pedidos</h2>
+        <button mat-stroked-button (click)="cargarFacturas()">
+          <mat-icon>refresh</mat-icon> Actualizar
+        </button>
+      </div>
+
+      <mat-table [dataSource]="facturas" style="width:100%">
+        <ng-container matColumnDef="numero">
+          <mat-header-cell *matHeaderCellDef>Nº Factura</mat-header-cell>
+          <mat-cell *matCellDef="let f"><strong>{{ f.numeroFactura }}</strong></mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="cliente">
+          <mat-header-cell *matHeaderCellDef>Cliente</mat-header-cell>
+          <mat-cell *matCellDef="let f">{{ f.usuario?.nombre }} {{ f.usuario?.apellido }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="fecha">
+          <mat-header-cell *matHeaderCellDef>Fecha</mat-header-cell>
+          <mat-cell *matCellDef="let f">{{ f.fecha | date:'dd/MM/yyyy' }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="total">
+          <mat-header-cell *matHeaderCellDef>Total</mat-header-cell>
+          <mat-cell *matCellDef="let f" class="precio-tag">${{ f.total | number:'1.2-2' }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="estado">
+          <mat-header-cell *matHeaderCellDef>Estado</mat-header-cell>
+          <mat-cell *matCellDef="let f">
+            <mat-select [value]="f.estado" (selectionChange)="cambiarEstadoFactura(f, $event.value)"
+                        style="min-width:130px" [class]="'estado-' + f.estado">
+              <mat-option *ngFor="let e of estadosPosibles" [value]="e">{{ e }}</mat-option>
+            </mat-select>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="acciones">
+          <mat-header-cell *matHeaderCellDef>PDF</mat-header-cell>
+          <mat-cell *matCellDef="let f">
+            <button mat-icon-button color="primary" (click)="descargarPdf(f.id)" matTooltip="Descargar PDF">
+              <mat-icon>picture_as_pdf</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="columnasFacturas"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: columnasFacturas;"></mat-row>
+      </mat-table>
+
+      <p *ngIf="facturas.length === 0" style="text-align:center;color:#888;padding:32px">
+        No hay pedidos registrados.
+      </p>
+    </div>
+  </mat-tab>
+
   <!-- TAB: Marcas -->
   <mat-tab label="Marcas">
     <div class="tab-content">

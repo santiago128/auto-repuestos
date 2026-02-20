@@ -6,6 +6,34 @@
   </button>
 </div>
 
+<!-- Búsqueda por vehículo -->
+<section class="vehiculo-search">
+  <h2><mat-icon style="vertical-align:middle">directions_car</mat-icon> Busca repuestos para tu vehículo</h2>
+  <div class="vehiculo-row">
+    <mat-form-field class="vehiculo-field">
+      <mat-label>Marca del vehículo</mat-label>
+      <mat-select [(ngModel)]="marcaSeleccionada" (selectionChange)="onMarcaVehiculoChange($event.value)">
+        <mat-option [value]="null">Selecciona una marca</mat-option>
+        <mat-option *ngFor="let m of marcas" [value]="m.id">{{ m.nombre }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="vehiculo-field">
+      <mat-label>Modelo</mat-label>
+      <mat-select [(ngModel)]="modeloSeleccionado" [disabled]="!marcaSeleccionada">
+        <mat-option [value]="null">Todos los modelos</mat-option>
+        <mat-option *ngFor="let m of modelosVehiculo" [value]="m.id">{{ m.nombre }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" style="height:56px"
+            [disabled]="!marcaSeleccionada"
+            (click)="buscarPorVehiculo()">
+      <mat-icon>search</mat-icon> Ver repuestos compatibles
+    </button>
+  </div>
+</section>
+
 <section class="featured-section">
   <h2>Buscar por Marca</h2>
   <div class="marcas-row">

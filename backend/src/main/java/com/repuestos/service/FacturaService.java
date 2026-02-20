@@ -2,7 +2,6 @@ package com.repuestos.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.repuestos.dto.CarritoItemDTO;
 import com.repuestos.dto.FacturaRequest;
 import com.repuestos.model.Factura;
 import com.repuestos.model.Usuario;
@@ -36,7 +35,6 @@ public class FacturaService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Construir JSON para el stored procedure
         List<Map<String, Object>> items = req.getItems().stream()
                 .map(item -> {
                     Map<String, Object> m = new HashMap<>();
@@ -67,7 +65,6 @@ public class FacturaService {
         BigDecimal total     = (BigDecimal) result[4];
         String  mensaje      = (String)  result[5];
 
-        // Enviar correo de confirmación
         Factura factura = facturaRepository.findById(facturaId).orElse(null);
         emailService.enviarConfirmacionCompra(usuario, factura, numeroFac, subtotal, iva, total);
 
@@ -91,6 +88,28 @@ public class FacturaService {
         Factura factura = facturaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Factura no encontrada"));
         if (!factura.getUsuario().getEmail().equals(email)) {
+            throw new RuntimeException("No autorizado para ver esta factura");
+        }
+        return factura;
+    }
+
+    @Transactional
+    public String cambiarEstado(Integer facturaId, String nuevoEstado) {
+        return (String) em.createNativeQuery(
+                "SELECT * FROM sp_cambiar_estado_factura(:facturaId, :estado)")
+                .setParameter("facturaId", facturaId)
+                .setParameter("estado", nuevoEstado)
+                .getSingleResult();
+    }
+
+    public List<Factura> obtenerTodas() {
+        return facturaRepository.findAllByOrderByFechaDesc();
+    }
+
+    public Factura obtenerFacturaPdf(Integer id, String email, boolean esAdmin) {
+        Factura factura = facturaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Factura no encontrada"));
+        if (!esAdmin && !factura.getUsuario().getEmail().equals(email)) {
             throw new RuntimeException("No autorizado para ver esta factura");
         }
         return factura;

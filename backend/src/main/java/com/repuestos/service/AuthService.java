@@ -3,7 +3,9 @@ package com.repuestos.service;
 import com.repuestos.config.JwtUtil;
 import com.repuestos.dto.LoginRequest;
 import com.repuestos.dto.RegisterRequest;
+import com.repuestos.model.PasswordResetToken;
 import com.repuestos.model.Usuario;
+import com.repuestos.repository.PasswordResetTokenRepository;
 import com.repuestos.repository.UsuarioRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -16,8 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,8 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final UsuarioRepository usuarioRepository;
+    private final PasswordResetTokenRepository tokenRepository;
+    private final EmailService emailService;
 
     @PersistenceContext
     private EntityManager em;
@@ -76,5 +82,45 @@ public class AuthService {
         response.put("email", result[1]);
         response.put("mensaje", result[2]);
         return response;
+    }
+
+    @Transactional
+    public String solicitarReset(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("No existe una cuenta con ese correo"));
+
+        tokenRepository.deleteByUsuarioId(usuario.getId());
+
+        String token = UUID.randomUUID().toString();
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setUsuario(usuario);
+        resetToken.setToken(token);
+        resetToken.setExpiraEn(LocalDateTime.now().plusHours(1));
+        tokenRepository.save(resetToken);
+
+        emailService.enviarResetPassword(usuario.getEmail(), token);
+        return "Se ha enviado un enlace de recuperación a tu correo";
+    }
+
+    @Transactional
+    public String resetPassword(String token, String nuevaPassword) {
+        PasswordResetToken resetToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Token inválido o no encontrado"));
+
+        if (resetToken.getUsado()) {
+            throw new RuntimeException("Este enlace ya fue utilizado");
+        }
+        if (resetToken.getExpiraEn().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("El enlace de recuperación ha expirado");
+        }
+
+        Usuario usuario = resetToken.getUsuario();
+        usuario.setPassword(passwordEncoder.encode(nuevaPassword));
+        usuarioRepository.save(usuario);
+
+        resetToken.setUsado(true);
+        tokenRepository.save(resetToken);
+
+        return "Contraseña actualizada exitosamente";
     }
 }

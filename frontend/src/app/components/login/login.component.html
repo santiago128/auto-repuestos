@@ -13,7 +13,7 @@
         <mat-error *ngIf="form.get('email')?.hasError('email')">Email inválido</mat-error>
       </mat-form-field>
 
-      <mat-form-field class="form-full-width" style="margin-bottom:24px">
+      <mat-form-field class="form-full-width" style="margin-bottom:8px">
         <mat-label>Contraseña</mat-label>
         <input matInput [type]="mostrarPassword ? 'text' : 'password'"
                formControlName="password" autocomplete="current-password">
@@ -21,6 +21,10 @@
           <mat-icon>{{ mostrarPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
       </mat-form-field>
+
+      <p style="text-align:right;margin-bottom:16px">
+        <a routerLink="/forgot-password" style="color:#1565C0;font-size:.9em">¿Olvidaste tu contraseña?</a>
+      </p>
 
       <button mat-raised-button color="primary" type="submit"
               [disabled]="form.invalid || cargando" style="width:100%;margin-bottom:12px">

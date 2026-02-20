@@ -30,10 +30,31 @@ public class RepuestoService {
         return repuestoRepository.buscarConFiltros(marcaId, modeloId, categoriaId, nombre);
     }
 
+    public Map<String, Object> buscarPaginado(Integer marcaId, Integer modeloId, Integer categoriaId,
+                                               String nombre, int page, int size) {
+        int offset = page * size;
+        List<Repuesto> repuestos = repuestoRepository.buscarConFiltrosPaginado(
+                marcaId, modeloId, categoriaId, nombre, size, offset);
+        long total = repuestoRepository.contarConFiltros(marcaId, modeloId, categoriaId, nombre);
+
+        Map<String, Object> resp = new HashMap<>();
+        resp.put("repuestos", repuestos);
+        resp.put("total", total);
+        resp.put("page", page);
+        resp.put("totalPages", (int) Math.ceil((double) total / size));
+        return resp;
+    }
+
     public Repuesto obtenerPorId(Integer id) {
         return repuestoRepository.findById(id)
                 .filter(r -> r.getActivo())
                 .orElseThrow(() -> new RuntimeException("Repuesto no encontrado"));
+    }
+
+    public List<Repuesto> obtenerRelacionados(Integer id) {
+        Repuesto r = obtenerPorId(id);
+        Integer categoriaId = r.getCategoria() != null ? r.getCategoria().getId() : null;
+        return repuestoRepository.findRelacionados(id, categoriaId, 4);
     }
 
     @Transactional

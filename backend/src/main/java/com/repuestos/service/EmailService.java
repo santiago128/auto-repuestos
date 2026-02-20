@@ -27,6 +27,37 @@ public class EmailService {
     private String fromEmail;
 
     @Async
+    public void enviarResetPassword(String email, String token) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(email);
+            helper.setSubject("Recuperación de contraseña - AutoRepuestos");
+            String link = "http://localhost:4200/reset-password?token=" + token;
+            String html = "<!DOCTYPE html><html><body style='font-family:Arial,sans-serif;color:#333'>" +
+                    "<div style='max-width:500px;margin:0 auto;padding:20px'>" +
+                    "<h2 style='color:#1565C0'>Recuperar contraseña</h2>" +
+                    "<p>Recibimos una solicitud para restablecer la contraseña de tu cuenta.</p>" +
+                    "<p>Haz clic en el siguiente botón para crear una nueva contraseña. " +
+                    "Este enlace es válido por <strong>1 hora</strong>.</p>" +
+                    "<div style='text-align:center;margin:24px 0'>" +
+                    "<a href='" + link + "' style='background:#1565C0;color:#fff;padding:12px 28px;" +
+                    "border-radius:6px;text-decoration:none;font-weight:bold;font-size:1em'>" +
+                    "Restablecer contraseña</a></div>" +
+                    "<p style='color:#888;font-size:.85em'>Si no solicitaste este cambio, ignora este correo.</p>" +
+                    "</div></body></html>";
+            helper.setText(html, true);
+
+            mailSender.send(message);
+            log.info("Correo de reset enviado a {}", email);
+        } catch (MessagingException e) {
+            log.error("Error al enviar correo de reset a {}: {}", email, e.getMessage());
+        }
+    }
+
+    @Async
     public void enviarConfirmacionCompra(Usuario usuario, Factura factura,
                                           String numeroFactura, BigDecimal subtotal,
                                           BigDecimal iva, BigDecimal total) {

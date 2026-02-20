@@ -40,18 +40,28 @@
   </button>
 </form>
 
-<!-- Resultados -->
+<!-- Cargando -->
 <div *ngIf="cargando" style="text-align:center;padding:40px">
   <mat-spinner diameter="40" style="margin:auto"></mat-spinner>
 </div>
 
+<!-- Sin resultados -->
 <div *ngIf="!cargando && repuestos.length === 0" class="no-results">
   <mat-icon style="font-size:48px;width:48px;height:48px;color:#ccc">search_off</mat-icon>
   <p>No se encontraron repuestos con los filtros seleccionados.</p>
 </div>
 
+<!-- Grid de productos -->
 <div class="productos-grid" *ngIf="!cargando">
   <mat-card *ngFor="let r of repuestos" class="producto-card" routerLink="/repuesto/{{r.id}}">
+    <!-- Botón favorito -->
+    <button mat-icon-button class="fav-btn"
+            [color]="esFavorito(r.id) ? 'warn' : ''"
+            (click)="toggleFavorito(r, $event)"
+            [matTooltip]="esFavorito(r.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'">
+      <mat-icon>{{ esFavorito(r.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+    </button>
+
     <mat-card-header>
       <mat-card-title>{{ r.nombre }}</mat-card-title>
       <mat-card-subtitle>
@@ -82,4 +92,16 @@
       </button>
     </mat-card-actions>
   </mat-card>
+</div>
+
+<!-- Paginación -->
+<div class="paginator-container" *ngIf="!cargando && totalItems > 0">
+  <mat-paginator
+    [length]="totalItems"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[6, 12, 24, 48]"
+    (page)="onPageChange($event)"
+    showFirstLastButtons>
+  </mat-paginator>
 </div>

@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface FacturaRepository extends JpaRepository<Factura, Integer> {
     List<Factura> findByUsuarioIdOrderByFechaDesc(Integer usuarioId);
+    List<Factura> findAllByOrderByFechaDesc();
 }

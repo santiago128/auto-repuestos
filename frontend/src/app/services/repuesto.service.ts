@@ -9,17 +9,30 @@ export class RepuestoService {
 
   constructor(private http: HttpClient) {}
 
-  getRepuestos(filtros?: { marcaId?: number; modeloId?: number; categoriaId?: number; nombre?: string }): Observable<any> {
+  getRepuestos(filtros?: {
+    marcaId?: number;
+    modeloId?: number;
+    categoriaId?: number;
+    nombre?: string;
+    page?: number;
+    size?: number;
+  }): Observable<any> {
     let params = new HttpParams();
     if (filtros?.marcaId) params = params.set('marcaId', filtros.marcaId);
     if (filtros?.modeloId) params = params.set('modeloId', filtros.modeloId);
     if (filtros?.categoriaId) params = params.set('categoriaId', filtros.categoriaId);
     if (filtros?.nombre) params = params.set('nombre', filtros.nombre);
+    if (filtros?.page !== undefined) params = params.set('page', filtros.page!);
+    if (filtros?.size !== undefined) params = params.set('size', filtros.size!);
     return this.http.get<any>(`${this.API}/repuestos`, { params });
   }
 
   getRepuesto(id: number): Observable<any> {
     return this.http.get<any>(`${this.API}/repuestos/${id}`);
+  }
+
+  getRelacionados(id: number): Observable<any> {
+    return this.http.get<any>(`${this.API}/repuestos/${id}/relacionados`);
   }
 
   crearRepuesto(data: any): Observable<any> {

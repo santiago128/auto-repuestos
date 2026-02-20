@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RepuestoService } from '../../services/repuesto.service';
+import { FacturaService } from '../../services/factura.service';
 import { Repuesto, Marca, Modelo, Categoria } from '../../models/repuesto.model';
+import { Factura } from '../../models/factura.model';
 
 @Component({
   selector: 'app-admin',
@@ -18,6 +20,11 @@ import { Repuesto, Marca, Modelo, Categoria } from '../../models/repuesto.model'
     .img-preview { width:80px; height:80px; object-fit:cover; border-radius:8px; border:1px solid #ddd; }
     .img-placeholder { width:80px; height:80px; display:flex; align-items:center; justify-content:center; background:#f5f5f5; border-radius:8px; border:1px dashed #ccc; color:#aaa; }
     .thumb-tabla { width:40px; height:40px; object-fit:cover; border-radius:4px; }
+    .estado-PAGADA { color:#1565C0; }
+    .estado-EN_PROCESO { color:#e65100; }
+    .estado-ENVIADO { color:#6a1b9a; }
+    .estado-ENTREGADO { color:#2e7d32; }
+    .estado-CANCELADO { color:#c62828; }
   `]
 })
 export class AdminComponent implements OnInit {
@@ -25,6 +32,7 @@ export class AdminComponent implements OnInit {
   marcas: Marca[] = [];
   modelos: Modelo[] = [];
   categorias: Categoria[] = [];
+  facturas: Factura[] = [];
 
   // Repuesto form
   repuestoForm: FormGroup;
@@ -45,10 +53,14 @@ export class AdminComponent implements OnInit {
   mostrarFormModelo = false;
 
   columnas = ['imagen', 'codigo', 'nombre', 'marca', 'modelo', 'precio', 'stock', 'acciones'];
+  columnasFacturas = ['numero', 'cliente', 'fecha', 'total', 'estado', 'acciones'];
+
+  estadosPosibles = ['PAGADA', 'EN_PROCESO', 'ENVIADO', 'ENTREGADO', 'CANCELADO'];
 
   constructor(
     private fb: FormBuilder,
     private repuestoSvc: RepuestoService,
+    private facturaSvc: FacturaService,
     private snack: MatSnackBar
   ) {
     this.repuestoForm = this.fb.group({
@@ -78,16 +90,45 @@ export class AdminComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarDatos();
+    this.cargarFacturas();
   }
 
   cargarDatos(): void {
-    this.repuestoSvc.getRepuestos().subscribe(r => this.repuestos = r.data ?? []);
+    this.repuestoSvc.getRepuestos().subscribe(r => {
+      const data = r.data;
+      this.repuestos = (data && typeof data === 'object' && 'repuestos' in data)
+        ? data.repuestos ?? []
+        : (Array.isArray(data) ? data : []);
+    });
     this.repuestoSvc.getMarcas().subscribe(r => this.marcas = r.data ?? []);
     this.repuestoSvc.getCategorias().subscribe(r => this.categorias = r.data ?? []);
   }
 
+  cargarFacturas(): void {
+    this.facturaSvc.todasLasFacturas().subscribe({
+      next: r => this.facturas = r.data ?? [],
+      error: () => {}
+    });
+  }
+
   onMarcaChange(marcaId: number): void {
     this.repuestoSvc.getModelos(marcaId).subscribe(r => this.modelos = r.data ?? []);
+  }
+
+  cambiarEstadoFactura(factura: Factura, nuevoEstado: string): void {
+    this.facturaSvc.cambiarEstado(factura.id, nuevoEstado).subscribe({
+      next: () => {
+        factura.estado = nuevoEstado;
+        this.snack.open('Estado actualizado', 'OK', { duration: 2000, panelClass: 'snack-success' });
+      },
+      error: err => this.snack.open(err.error?.mensaje || 'Error al cambiar estado', 'OK', {
+        duration: 3000, panelClass: 'snack-error'
+      })
+    });
+  }
+
+  descargarPdf(facturaId: number): void {
+    this.facturaSvc.descargarPdf(facturaId);
   }
 
   // --- REPUESTOS ---
@@ -115,7 +156,6 @@ export class AdminComponent implements OnInit {
     if (!input.files?.length) return;
     const file = input.files[0];
     this.archivoSeleccionado = file;
-    // Vista previa local
     const reader = new FileReader();
     reader.onload = () => this.imagenPreview = reader.result as string;
     reader.readAsDataURL(file);

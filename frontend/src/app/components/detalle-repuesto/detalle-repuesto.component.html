@@ -1,13 +1,14 @@
-<div *ngIf="cargando" style="text-align:center;padding:60px">
-  <mat-spinner diameter="40" style="margin:auto"></mat-spinner>
+<div *ngIf="cargando" style="text-align:center;padding:80px">
+  <mat-spinner diameter="44" style="margin:auto"></mat-spinner>
 </div>
 
-<div *ngIf="repuesto && !cargando">
-  <button mat-button routerLink="/catalogo" style="margin-bottom:16px">
+<div *ngIf="repuesto && !cargando" style="animation:fadeIn .4s ease">
+  <button mat-button routerLink="/catalogo" style="margin-bottom:20px;color:#475569">
     <mat-icon>arrow_back</mat-icon> Volver al catálogo
   </button>
 
   <div class="detalle-container">
+    <!-- Imagen -->
     <div>
       <img class="detalle-img"
            [src]="repuesto.imagenUrl || 'assets/repuesto-default.png'"
@@ -15,55 +16,65 @@
            onerror="this.src='assets/repuesto-default.png'">
     </div>
 
+    <!-- Info -->
     <div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <h1 style="font-size:1.8em;margin-bottom:8px">{{ repuesto.nombre }}</h1>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <h1 style="font-size:1.85rem;font-weight:800;color:#0f172a;letter-spacing:-.02em;line-height:1.2">
+          {{ repuesto.nombre }}
+        </h1>
         <button mat-icon-button [color]="esFavorito ? 'warn' : ''"
                 (click)="toggleFavorito()"
+                style="flex-shrink:0"
                 [matTooltip]="esFavorito ? 'Quitar de favoritos' : 'Agregar a favoritos'">
           <mat-icon>{{ esFavorito ? 'favorite' : 'favorite_border' }}</mat-icon>
         </button>
       </div>
-      <p style="color:#888">Código: {{ repuesto.codigo }}</p>
+
+      <p style="color:#94a3b8;font-size:.85rem;font-family:monospace;margin-bottom:4px">
+        Cód: {{ repuesto.codigo }}
+      </p>
 
       <div class="precio-grande">${{ repuesto.precio | number:'1.2-2' }}</div>
 
       <div class="info-row">
-        <strong>Marca:</strong> {{ repuesto.marca?.nombre }}
-        <span *ngIf="repuesto.marca?.paisOrigen"> ({{ repuesto.marca?.paisOrigen }})</span>
+        <strong>Marca:</strong>
+        &nbsp;{{ repuesto.marca?.nombre }}
+        <span *ngIf="repuesto.marca?.paisOrigen" style="color:#94a3b8"> ({{ repuesto.marca?.paisOrigen }})</span>
       </div>
       <div class="info-row" *ngIf="repuesto.modelo">
-        <strong>Modelo:</strong> {{ repuesto.modelo?.nombre }}
-        <span *ngIf="repuesto.modelo?.anioInicio">
-          ({{ repuesto.modelo?.anioInicio }} - {{ repuesto.modelo?.anioFin || 'actual' }})
+        <strong>Modelo:</strong>
+        &nbsp;{{ repuesto.modelo?.nombre }}
+        <span *ngIf="repuesto.modelo?.anioInicio" style="color:#94a3b8">
+          ({{ repuesto.modelo?.anioInicio }} – {{ repuesto.modelo?.anioFin || 'actual' }})
         </span>
       </div>
       <div class="info-row" *ngIf="repuesto.categoria">
-        <strong>Categoría:</strong> {{ repuesto.categoria?.nombre }}
+        <strong>Categoría:</strong>
+        &nbsp;<span class="categoria-chip">{{ repuesto.categoria?.nombre }}</span>
       </div>
       <div class="info-row">
         <strong>Disponibilidad:</strong>
-        <span [class.stock-ok]="repuesto.stock > 5"
-              [class.stock-bajo]="repuesto.stock > 0 && repuesto.stock <= 5"
-              [class.stock-agotado]="repuesto.stock === 0">
+        &nbsp;<span [class.stock-ok]="repuesto.stock > 5"
+                    [class.stock-bajo]="repuesto.stock > 0 && repuesto.stock <= 5"
+                    [class.stock-agotado]="repuesto.stock === 0">
           {{ repuesto.stock > 0 ? repuesto.stock + ' unidades en stock' : 'Agotado' }}
         </span>
       </div>
 
-      <mat-divider style="margin:16px 0"></mat-divider>
-
-      <p *ngIf="repuesto.descripcion" style="color:#555;line-height:1.6">
+      <p *ngIf="repuesto.descripcion"
+         style="color:#475569;line-height:1.7;font-size:.95rem;margin-top:20px;margin-bottom:4px">
         {{ repuesto.descripcion }}
       </p>
 
-      <div style="display:flex;align-items:center;gap:16px;margin-top:20px">
-        <mat-form-field style="width:80px">
+      <div style="display:flex;align-items:center;gap:16px;margin-top:28px">
+        <mat-form-field style="width:88px">
           <mat-label>Cant.</mat-label>
           <input matInput type="number" [(ngModel)]="cantidad"
                  [min]="1" [max]="repuesto.stock">
         </mat-form-field>
 
-        <button mat-raised-button color="primary" style="height:50px"
+        <button mat-raised-button color="primary"
+                style="flex:1;height:52px;font-size:1rem;font-weight:700"
                 [disabled]="repuesto.stock === 0"
                 (click)="agregarAlCarrito()">
           <mat-icon>add_shopping_cart</mat-icon>
@@ -74,20 +85,20 @@
   </div>
 
   <!-- Repuestos relacionados -->
-  <div *ngIf="relacionados.length > 0" style="margin-top:40px">
-    <h2 style="color:#1565C0;margin-bottom:4px">Repuestos relacionados</h2>
-    <mat-divider style="margin-bottom:16px"></mat-divider>
-    <div class="relacionados-grid">
-      <mat-card *ngFor="let r of relacionados" class="relacionado-card"
-                [routerLink]="['/repuesto', r.id]">
+  <div *ngIf="relacionados.length > 0" style="margin-top:48px">
+    <h2 style="font-size:1.3rem;font-weight:700;color:#0f172a;margin-bottom:6px;padding-bottom:12px;border-bottom:3px solid #f59e0b;display:inline-block">
+      Repuestos relacionados
+    </h2>
+    <div class="relacionados-grid" style="margin-top:20px">
+      <mat-card *ngFor="let r of relacionados" class="relacionado-card" [routerLink]="['/repuesto', r.id]">
         <img mat-card-image
              [src]="r.imagenUrl || 'assets/repuesto-default.png'"
              [alt]="r.nombre"
-             style="height:120px;object-fit:contain;padding:8px"
+             style="height:120px;object-fit:contain;padding:10px;background:#f8fafc"
              onerror="this.src='assets/repuesto-default.png'">
-        <mat-card-content style="padding:8px">
-          <p style="font-weight:600;font-size:.9em;margin-bottom:4px">{{ r.nombre }}</p>
-          <p class="precio-tag" style="font-size:1em">${{ r.precio | number:'1.2-2' }}</p>
+        <mat-card-content style="padding:10px">
+          <p style="font-weight:600;font-size:.88rem;color:#0f172a;margin-bottom:4px;line-height:1.3">{{ r.nombre }}</p>
+          <p class="precio-tag" style="font-size:1.05rem">${{ r.precio | number:'1.2-2' }}</p>
         </mat-card-content>
       </mat-card>
     </div>

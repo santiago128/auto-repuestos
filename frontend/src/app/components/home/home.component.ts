@@ -7,17 +7,146 @@ import { Repuesto, Marca, Modelo } from '../../models/repuesto.model';
   selector: 'app-home',
   templateUrl: './home.component.html',
   styles: [`
-    .hero { background: linear-gradient(135deg,#1565C0,#0D47A1); color:white; padding:60px 20px; text-align:center; border-radius:8px; margin-bottom:32px; }
-    .hero h1 { font-size:2.5em; margin-bottom:12px; }
-    .hero p { font-size:1.1em; opacity:.9; margin-bottom:24px; }
-    .featured-section h2 { font-size:1.8em; margin-bottom:20px; color:#1565C0; }
-    .marcas-row { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:32px; }
-    .marca-btn { border:2px solid #1565C0; border-radius:20px; padding:6px 18px; cursor:pointer; font-weight:500; background:white; color:#1565C0; transition:all .2s; }
-    .marca-btn:hover { background:#1565C0; color:white; }
-    .vehiculo-search { background:white; padding:24px; border-radius:8px; margin-bottom:32px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
-    .vehiculo-search h2 { color:#1565C0; margin-bottom:16px; }
-    .vehiculo-row { display:flex; gap:16px; align-items:flex-end; flex-wrap:wrap; }
-    .vehiculo-field { min-width:200px; }
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #0f1c3e 0%, #1a2f5e 45%, #1e40af 100%);
+      color: white;
+      padding: 72px 48px;
+      border-radius: 24px;
+      margin-bottom: 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60%; right: -15%;
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(245,158,11,.14) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-content { position: relative; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245,158,11,.18);
+      color: #fcd34d;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      border: 1px solid rgba(245,158,11,.3);
+      margin-bottom: 18px;
+      animation: slideInL .5s ease;
+    }
+    .hero h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      letter-spacing: -.03em;
+      line-height: 1.15;
+      animation: slideInL .55s ease;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      opacity: .85;
+      margin-bottom: 32px;
+      max-width: 500px;
+      line-height: 1.65;
+      animation: slideInL .6s ease;
+    }
+    .hero-ctas { animation: slideUp .7s ease; }
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 40px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,.15);
+      flex-wrap: wrap;
+      animation: slideUp .75s ease;
+    }
+    .stat { display: flex; flex-direction: column; }
+    .stat-value {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #fcd34d;
+      letter-spacing: -.02em;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: .78rem;
+      font-weight: 500;
+      color: rgba(255,255,255,.6);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    @keyframes slideInL { from{opacity:0;transform:translateX(-24px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes slideUp  { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── Vehicle Search ── */
+    .vehiculo-search {
+      background: white;
+      padding: 28px;
+      border-radius: 16px;
+      margin-bottom: 36px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.07);
+      border: 1px solid #e2e8f0;
+      animation: slideUp .5s ease;
+    }
+    .vehiculo-search h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1a2f5e;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .vehiculo-row { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+    .vehiculo-field { flex: 1; min-width: 200px; }
+
+    /* ── Featured sections ── */
+    .featured-section { margin-bottom: 44px; }
+    .featured-section h2 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 3px solid #f59e0b;
+      display: inline-block;
+    }
+
+    /* ── Brand buttons ── */
+    .marcas-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+    .marca-btn {
+      background: white;
+      color: #1a2f5e;
+      border: 2px solid #1a2f5e;
+      border-radius: 9999px;
+      padding: 7px 20px;
+      font-size: .88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .25s cubic-bezier(.4,0,.2,1);
+      font-family: 'Inter','Roboto',sans-serif;
+    }
+    .marca-btn:hover {
+      background: #1a2f5e;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(26,47,94,.25);
+    }
+
+    @media (max-width:768px) {
+      .hero { padding: 48px 24px; }
+      .hero h1 { font-size: 1.9rem; }
+      .hero-stats { gap: 20px; }
+    }
   `]
 })
 export class HomeComponent implements OnInit {

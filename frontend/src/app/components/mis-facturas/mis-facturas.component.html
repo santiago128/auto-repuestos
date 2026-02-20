@@ -1,47 +1,56 @@
-<h1 style="margin-bottom:20px">Mis Pedidos</h1>
-
-<div *ngIf="cargando" style="text-align:center;padding:40px">
-  <mat-spinner diameter="40" style="margin:auto"></mat-spinner>
+<div class="page-header">
+  <h1>Mis Pedidos</h1>
 </div>
 
-<div *ngIf="!cargando && facturas.length === 0" style="text-align:center;padding:60px;color:#888">
-  <mat-icon style="font-size:64px;width:64px;height:64px;color:#ddd">receipt_long</mat-icon>
-  <h2>Aún no tienes pedidos</h2>
-  <button mat-raised-button color="primary" routerLink="/catalogo" style="margin-top:16px">
-    Ver Catálogo
+<div *ngIf="cargando" style="text-align:center;padding:60px">
+  <mat-spinner diameter="44" style="margin:auto"></mat-spinner>
+</div>
+
+<div *ngIf="!cargando && facturas.length === 0" style="text-align:center;padding:80px 24px;color:#94a3b8">
+  <mat-icon style="font-size:64px;width:64px;height:64px;color:#cbd5e1;display:block;margin:0 auto 16px">receipt_long</mat-icon>
+  <h2 style="color:#475569;margin-bottom:8px">Aún no tienes pedidos</h2>
+  <p style="margin-bottom:20px">Explora el catálogo y realiza tu primer pedido</p>
+  <button mat-raised-button color="primary" routerLink="/catalogo">
+    <mat-icon>storefront</mat-icon> Ver Catálogo
   </button>
 </div>
 
-<div *ngFor="let f of facturas">
+<div *ngFor="let f of facturas; let i = index" [style.animation-delay]="(i * 0.05) + 's'">
   <div class="factura-card" (click)="verDetalle(f)">
     <div class="factura-header">
       <div>
-        <strong style="font-size:1.1em">{{ f.numeroFactura }}</strong>
-        <p style="color:#666;font-size:.9em;margin-top:4px">
+        <strong style="font-size:1.05rem;color:#0f172a">{{ f.numeroFactura }}</strong>
+        <p style="color:#64748b;font-size:.85rem;margin-top:4px">
+          <mat-icon style="font-size:14px;vertical-align:middle;color:#94a3b8">calendar_today</mat-icon>
           {{ f.fecha | date:'dd/MM/yyyy HH:mm' }}
         </p>
       </div>
-      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-        <span [class]="getEstadoClass(f.estado)">{{ f.estado }}</span>
+
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span [class]="getEstadoClass(f.estado)">{{ f.estado.replace('_',' ') }}</span>
         <p class="precio-tag" style="margin:0">${{ f.total | number:'1.2-2' }}</p>
-        <button mat-stroked-button color="primary" style="font-size:.8em;height:32px"
+        <button mat-stroked-button color="primary" style="height:34px;min-width:auto;padding:0 14px"
                 (click)="descargarPdf(f, $event)" matTooltip="Descargar PDF">
-          <mat-icon style="font-size:18px">picture_as_pdf</mat-icon>
+          <mat-icon style="font-size:16px;margin-right:4px">picture_as_pdf</mat-icon>
           PDF
         </button>
       </div>
     </div>
 
     <!-- Detalle expandible -->
-    <div *ngIf="facturaSeleccionada?.id === f.id" style="margin-top:16px;border-top:1px solid #eee;padding-top:16px">
-      <div *ngFor="let d of f.detalles" style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5">
-        <span>{{ d.repuesto?.nombre }} x{{ d.cantidad }}</span>
-        <span>${{ d.subtotal | number:'1.2-2' }}</span>
+    <div *ngIf="facturaSeleccionada?.id === f.id"
+         style="margin-top:20px;border-top:1px solid #f1f5f9;padding-top:20px;animation:fadeIn .3s ease">
+      <div *ngFor="let d of f.detalles"
+           style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f8fafc;font-size:.9rem">
+        <span style="color:#475569">{{ d.repuesto?.nombre }} <strong style="color:#0f172a">×{{ d.cantidad }}</strong></span>
+        <span style="font-weight:600;color:#0f172a">${{ d.subtotal | number:'1.2-2' }}</span>
       </div>
-      <div style="margin-top:12px;text-align:right">
-        <small>Subtotal: ${{ f.subtotal | number:'1.2-2' }} + IVA: ${{ f.iva | number:'1.2-2' }}</small>
-        <p *ngIf="f.direccionEnvio" style="color:#666;margin-top:4px">
-          <mat-icon style="font-size:16px;vertical-align:middle">local_shipping</mat-icon>
+      <div style="margin-top:16px;text-align:right">
+        <p style="font-size:.85rem;color:#64748b">
+          Subtotal: ${{ f.subtotal | number:'1.2-2' }} &nbsp;|&nbsp; IVA (12%): ${{ f.iva | number:'1.2-2' }}
+        </p>
+        <p *ngIf="f.direccionEnvio" style="color:#64748b;font-size:.85rem;margin-top:8px">
+          <mat-icon style="font-size:15px;vertical-align:middle;color:#94a3b8">local_shipping</mat-icon>
           {{ f.direccionEnvio }}
         </p>
       </div>

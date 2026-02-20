@@ -1,4 +1,4 @@
-<h1 style="margin-bottom:20px">Panel de Administración</h1>
+<div class="admin-page-title">Panel de Administración</div>
 
 <mat-tab-group>
 
@@ -13,8 +13,10 @@
       </div>
 
       <!-- Formulario repuesto -->
-      <mat-card *ngIf="mostrarFormRepuesto" style="margin-bottom:20px;padding:20px">
-        <h3>{{ repuestoEditando ? 'Editar Repuesto' : 'Nuevo Repuesto' }}</h3>
+      <mat-card *ngIf="mostrarFormRepuesto" style="margin-bottom:24px;padding:24px;border-radius:14px !important">
+        <h3 style="font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:20px">
+          {{ repuestoEditando ? 'Editar Repuesto' : 'Nuevo Repuesto' }}
+        </h3>
         <form [formGroup]="repuestoForm" (ngSubmit)="guardarRepuesto()">
           <div class="form-grid">
             <mat-form-field>
@@ -56,14 +58,13 @@
             </mat-form-field>
           </div>
 
-          <!-- Upload de imagen -->
           <div class="upload-area">
             <div *ngIf="imagenPreview; else sinImagen">
               <img [src]="imagenPreview" class="img-preview" alt="Preview">
             </div>
             <ng-template #sinImagen>
               <div class="img-placeholder">
-                <mat-icon>image</mat-icon>
+                <mat-icon style="font-size:28px;color:#94a3b8">image</mat-icon>
               </div>
             </ng-template>
             <div>
@@ -72,22 +73,26 @@
                 {{ uploadingImagen ? 'Subiendo...' : 'Seleccionar imagen' }}
               </button>
               <input #fileInput type="file" accept="image/*" style="display:none" (change)="onArchivoSeleccionado($event)">
-              <p style="font-size:0.8em;color:#888;margin:4px 0 0">
+              <p style="font-size:.78rem;color:#94a3b8;margin:6px 0 0">
                 {{ archivoSeleccionado ? archivoSeleccionado.name : (repuestoForm.get('imagenUrl')?.value || 'Sin imagen') }}
               </p>
             </div>
           </div>
 
-          <mat-form-field style="width:100%;margin-top:8px">
+          <mat-form-field style="width:100%;margin-top:4px">
             <mat-label>Descripción</mat-label>
             <textarea matInput formControlName="descripcion" rows="2"></textarea>
           </mat-form-field>
-          <div style="display:flex;gap:12px;margin-top:12px">
+
+          <div style="display:flex;gap:12px;margin-top:16px">
             <button mat-raised-button color="primary" type="submit" [disabled]="repuestoForm.invalid || uploadingImagen">
               <mat-icon *ngIf="uploadingImagen">hourglass_empty</mat-icon>
+              <mat-icon *ngIf="!uploadingImagen">save</mat-icon>
               {{ uploadingImagen ? 'Subiendo imagen...' : 'Guardar' }}
             </button>
-            <button mat-stroked-button type="button" (click)="cancelarFormRepuesto()" [disabled]="uploadingImagen">Cancelar</button>
+            <button mat-stroked-button type="button" (click)="cancelarFormRepuesto()" [disabled]="uploadingImagen">
+              Cancelar
+            </button>
           </div>
         </form>
       </mat-card>
@@ -95,19 +100,19 @@
       <!-- Tabla repuestos -->
       <mat-table [dataSource]="repuestos" class="tabla-repuestos">
         <ng-container matColumnDef="imagen">
-          <mat-header-cell *matHeaderCellDef style="max-width:60px"></mat-header-cell>
-          <mat-cell *matCellDef="let r" style="max-width:60px">
+          <mat-header-cell *matHeaderCellDef style="max-width:64px"></mat-header-cell>
+          <mat-cell *matCellDef="let r" style="max-width:64px">
             <img *ngIf="r.imagenUrl" [src]="r.imagenUrl" class="thumb-tabla" [alt]="r.nombre">
-            <mat-icon *ngIf="!r.imagenUrl" style="color:#ccc">image_not_supported</mat-icon>
+            <mat-icon *ngIf="!r.imagenUrl" style="color:#cbd5e1">image_not_supported</mat-icon>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="codigo">
           <mat-header-cell *matHeaderCellDef>Código</mat-header-cell>
-          <mat-cell *matCellDef="let r"><code>{{ r.codigo }}</code></mat-cell>
+          <mat-cell *matCellDef="let r"><code style="font-size:.82rem;color:#475569">{{ r.codigo }}</code></mat-cell>
         </ng-container>
         <ng-container matColumnDef="nombre">
           <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell>
-          <mat-cell *matCellDef="let r">{{ r.nombre }}</mat-cell>
+          <mat-cell *matCellDef="let r" style="font-weight:500">{{ r.nombre }}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="marca">
           <mat-header-cell *matHeaderCellDef>Marca</mat-header-cell>
@@ -115,7 +120,7 @@
         </ng-container>
         <ng-container matColumnDef="modelo">
           <mat-header-cell *matHeaderCellDef>Modelo</mat-header-cell>
-          <mat-cell *matCellDef="let r">{{ r.modelo?.nombre || '—' }}</mat-cell>
+          <mat-cell *matCellDef="let r" style="color:#64748b">{{ r.modelo?.nombre || '—' }}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="precio">
           <mat-header-cell *matHeaderCellDef>Precio</mat-header-cell>
@@ -164,11 +169,11 @@
         </ng-container>
         <ng-container matColumnDef="cliente">
           <mat-header-cell *matHeaderCellDef>Cliente</mat-header-cell>
-          <mat-cell *matCellDef="let f">{{ f.usuario?.nombre }} {{ f.usuario?.apellido }}</mat-cell>
+          <mat-cell *matCellDef="let f" style="color:#475569">{{ f.usuario?.nombre }} {{ f.usuario?.apellido }}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="fecha">
           <mat-header-cell *matHeaderCellDef>Fecha</mat-header-cell>
-          <mat-cell *matCellDef="let f">{{ f.fecha | date:'dd/MM/yyyy' }}</mat-cell>
+          <mat-cell *matCellDef="let f" style="color:#64748b">{{ f.fecha | date:'dd/MM/yyyy' }}</mat-cell>
         </ng-container>
         <ng-container matColumnDef="total">
           <mat-header-cell *matHeaderCellDef>Total</mat-header-cell>
@@ -178,8 +183,8 @@
           <mat-header-cell *matHeaderCellDef>Estado</mat-header-cell>
           <mat-cell *matCellDef="let f">
             <mat-select [value]="f.estado" (selectionChange)="cambiarEstadoFactura(f, $event.value)"
-                        style="min-width:130px" [class]="'estado-' + f.estado">
-              <mat-option *ngFor="let e of estadosPosibles" [value]="e">{{ e }}</mat-option>
+                        style="min-width:140px" [class]="'estado-' + f.estado">
+              <mat-option *ngFor="let e of estadosPosibles" [value]="e">{{ e.replace('_',' ') }}</mat-option>
             </mat-select>
           </mat-cell>
         </ng-container>
@@ -195,7 +200,7 @@
         <mat-row *matRowDef="let row; columns: columnasFacturas;"></mat-row>
       </mat-table>
 
-      <p *ngIf="facturas.length === 0" style="text-align:center;color:#888;padding:32px">
+      <p *ngIf="facturas.length === 0" style="text-align:center;color:#94a3b8;padding:40px">
         No hay pedidos registrados.
       </p>
     </div>
@@ -210,9 +215,9 @@
           <mat-icon>add</mat-icon> Nueva Marca
         </button>
       </div>
-      <mat-card *ngIf="mostrarFormMarca" style="margin-bottom:20px;padding:20px">
+      <mat-card *ngIf="mostrarFormMarca" style="margin-bottom:24px;padding:20px;border-radius:14px !important">
         <form [formGroup]="marcaForm" (ngSubmit)="guardarMarca()">
-          <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
             <mat-form-field>
               <mat-label>Nombre de la marca</mat-label>
               <input matInput formControlName="nombre">
@@ -221,15 +226,20 @@
               <mat-label>País de origen</mat-label>
               <input matInput formControlName="paisOrigen">
             </mat-form-field>
-            <button mat-raised-button color="primary" type="submit" [disabled]="marcaForm.invalid">Guardar</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="marcaForm.invalid">
+              <mat-icon>save</mat-icon> Guardar
+            </button>
             <button mat-stroked-button type="button" (click)="mostrarFormMarca = false">Cancelar</button>
           </div>
         </form>
       </mat-card>
-      <div style="display:flex;flex-wrap:wrap;gap:12px">
-        <mat-card *ngFor="let m of marcas" style="padding:12px 20px;min-width:200px">
-          <strong>{{ m.nombre }}</strong>
-          <p style="color:#888;font-size:.85em">{{ m.paisOrigen || 'Origen no especificado' }}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:14px">
+        <mat-card *ngFor="let m of marcas" style="padding:14px 22px;min-width:200px;border-radius:12px !important">
+          <strong style="color:#0f172a">{{ m.nombre }}</strong>
+          <p style="color:#94a3b8;font-size:.82rem;margin-top:4px">
+            <mat-icon style="font-size:14px;vertical-align:middle">public</mat-icon>
+            {{ m.paisOrigen || 'Origen no especificado' }}
+          </p>
         </mat-card>
       </div>
     </div>
@@ -244,7 +254,7 @@
           <mat-icon>add</mat-icon> Nuevo Modelo
         </button>
       </div>
-      <mat-card *ngIf="mostrarFormModelo" style="margin-bottom:20px;padding:20px">
+      <mat-card *ngIf="mostrarFormModelo" style="margin-bottom:24px;padding:20px;border-radius:14px !important">
         <form [formGroup]="modeloForm" (ngSubmit)="guardarModelo()">
           <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
             <mat-form-field>
@@ -265,15 +275,26 @@
                 <mat-option *ngFor="let m of marcas" [value]="m.id">{{ m.nombre }}</mat-option>
               </mat-select>
             </mat-form-field>
-            <button mat-raised-button color="primary" type="submit" [disabled]="modeloForm.invalid">Guardar</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="modeloForm.invalid">
+              <mat-icon>save</mat-icon> Guardar
+            </button>
             <button mat-stroked-button type="button" (click)="mostrarFormModelo = false">Cancelar</button>
           </div>
         </form>
       </mat-card>
       <mat-table [dataSource]="modelos" style="width:100%">
-        <ng-container matColumnDef="nombre"><mat-header-cell *matHeaderCellDef>Modelo</mat-header-cell><mat-cell *matCellDef="let m">{{ m.nombre }}</mat-cell></ng-container>
-        <ng-container matColumnDef="marca"><mat-header-cell *matHeaderCellDef>Marca</mat-header-cell><mat-cell *matCellDef="let m"><span class="marca-chip">{{ m.marca?.nombre }}</span></mat-cell></ng-container>
-        <ng-container matColumnDef="anios"><mat-header-cell *matHeaderCellDef>Años</mat-header-cell><mat-cell *matCellDef="let m">{{ m.anioInicio }} - {{ m.anioFin || 'actual' }}</mat-cell></ng-container>
+        <ng-container matColumnDef="nombre">
+          <mat-header-cell *matHeaderCellDef>Modelo</mat-header-cell>
+          <mat-cell *matCellDef="let m" style="font-weight:500">{{ m.nombre }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="marca">
+          <mat-header-cell *matHeaderCellDef>Marca</mat-header-cell>
+          <mat-cell *matCellDef="let m"><span class="marca-chip">{{ m.marca?.nombre }}</span></mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="anios">
+          <mat-header-cell *matHeaderCellDef>Años</mat-header-cell>
+          <mat-cell *matCellDef="let m" style="color:#64748b">{{ m.anioInicio }} – {{ m.anioFin || 'actual' }}</mat-cell>
+        </ng-container>
         <mat-header-row *matHeaderRowDef="['nombre','marca','anios']"></mat-header-row>
         <mat-row *matRowDef="let row; columns: ['nombre','marca','anios'];"></mat-row>
       </mat-table>

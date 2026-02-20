@@ -7,15 +7,60 @@ import { Factura } from '../../models/factura.model';
   selector: 'app-mis-facturas',
   templateUrl: './mis-facturas.component.html',
   styles: [`
-    .factura-card { background:white; border-radius:8px; padding:20px; margin-bottom:16px; cursor:pointer; transition:box-shadow .2s; }
-    .factura-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.12); }
-    .factura-header { display:flex; justify-content:space-between; align-items:center; }
-    .estado-chip { padding:4px 12px; border-radius:12px; font-size:.85em; font-weight:600; }
-    .estado-PAGADA { background:#e3f2fd; color:#1565C0; }
-    .estado-EN_PROCESO { background:#fff3e0; color:#e65100; }
-    .estado-ENVIADO { background:#f3e5f5; color:#6a1b9a; }
-    .estado-ENTREGADO { background:#e8f5e9; color:#2e7d32; }
-    .estado-CANCELADO { background:#ffebee; color:#c62828; }
+    .page-header {
+      margin-bottom: 28px;
+      animation: slideInL .4s ease;
+    }
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -.03em;
+    }
+    .page-header h1::after {
+      content: '';
+      display: block;
+      width: 40px; height: 4px;
+      background: #f59e0b;
+      border-radius: 2px;
+      margin-top: 6px;
+    }
+    .factura-card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 14px;
+      cursor: pointer;
+      transition: transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s cubic-bezier(.4,0,.2,1), border-color .25s;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+      border: 1px solid #e2e8f0;
+      animation: slideUp .4s ease both;
+    }
+    .factura-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(26,47,94,.12);
+      border-color: rgba(26,47,94,.2);
+    }
+    .factura-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+
+    /* Estado badges */
+    .estado-chip {
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+    .estado-PAGADA      { background: #dbeafe; color: #1d4ed8; }
+    .estado-EN_PROCESO  { background: #fef3c7; color: #b45309; }
+    .estado-ENVIADO     { background: #f3e8ff; color: #7c3aed; }
+    .estado-ENTREGADO   { background: #d1fae5; color: #065f46; }
+    .estado-CANCELADO   { background: #fee2e2; color: #991b1b; }
+
+    @keyframes slideInL { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes slideUp  { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
   `]
 })
 export class MisFacturasComponent implements OnInit {

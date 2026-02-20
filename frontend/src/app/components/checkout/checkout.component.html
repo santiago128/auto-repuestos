@@ -1,46 +1,58 @@
 <!-- Pedido exitoso -->
-<div *ngIf="facturaCreada" style="text-align:center;padding:40px">
-  <mat-icon style="font-size:80px;width:80px;height:80px;color:#4caf50">check_circle</mat-icon>
-  <h2 style="color:#4caf50;margin-top:16px">¡Pedido realizado con éxito!</h2>
-  <p style="font-size:1.1em;margin:12px 0">
-    Número de factura: <strong>{{ facturaCreada.numeroFactura }}</strong>
+<div *ngIf="facturaCreada" style="text-align:center;padding:60px 24px;animation:scaleIn .5s ease">
+  <div style="width:100px;height:100px;border-radius:50%;background:#d1fae5;display:inline-flex;align-items:center;justify-content:center;margin-bottom:20px">
+    <mat-icon style="font-size:52px;width:52px;height:52px;color:#059669">check_circle</mat-icon>
+  </div>
+  <h2 style="font-size:1.8rem;font-weight:800;color:#065f46;margin-bottom:12px">¡Pedido realizado con éxito!</h2>
+  <p style="font-size:1rem;color:#475569;margin-bottom:6px">
+    Número de factura: <strong style="color:#0f172a">{{ facturaCreada.numeroFactura }}</strong>
   </p>
-  <p>Total: <strong>${{ facturaCreada.total | number:'1.2-2' }}</strong></p>
-  <p style="color:#666;margin-top:8px">
-    Hemos enviado la confirmación a tu correo electrónico.
+  <p style="font-size:1.3rem;font-weight:700;color:#d97706;margin-bottom:6px">
+    Total: ${{ facturaCreada.total | number:'1.2-2' }}
   </p>
-  <div style="margin-top:24px;display:flex;gap:12px;justify-content:center">
+  <p style="color:#64748b;font-size:.9rem;margin-bottom:28px">
+    <mat-icon style="font-size:15px;vertical-align:middle">mail</mat-icon>
+    Hemos enviado la confirmación a tu correo electrónico
+  </p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
     <button mat-raised-button color="primary" routerLink="/mis-facturas">
-      Ver mis pedidos
+      <mat-icon>receipt_long</mat-icon> Ver mis pedidos
     </button>
     <button mat-stroked-button routerLink="/catalogo">
-      Seguir comprando
+      <mat-icon>storefront</mat-icon> Seguir comprando
     </button>
   </div>
 </div>
 
 <!-- Formulario de checkout -->
 <div *ngIf="!facturaCreada">
-  <h1 style="margin-bottom:20px">Finalizar Compra</h1>
+  <div style="margin-bottom:28px">
+    <h1 style="font-size:2rem;font-weight:800;color:#0f172a;letter-spacing:-.03em">Finalizar Compra</h1>
+    <div style="width:40px;height:4px;background:#f59e0b;border-radius:2px;margin-top:6px"></div>
+  </div>
 
   <div *ngIf="procesando" class="procesando">
-    <mat-spinner diameter="50" style="margin:auto"></mat-spinner>
-    <p style="margin-top:16px;color:#666">Procesando tu pedido...</p>
+    <mat-spinner diameter="52" style="margin:auto"></mat-spinner>
+    <p style="margin-top:20px;color:#64748b;font-weight:500">Procesando tu pedido...</p>
   </div>
 
   <div *ngIf="!procesando" class="checkout-grid">
     <!-- Formulario de envío -->
     <div>
-      <h2 style="margin-bottom:16px">Datos de Envío</h2>
+      <h2 style="font-size:1.2rem;font-weight:700;color:#0f172a;margin-bottom:20px;display:flex;align-items:center;gap:8px">
+        <mat-icon style="color:#1a2f5e">local_shipping</mat-icon>
+        Datos de Envío
+      </h2>
       <form [formGroup]="form" (ngSubmit)="confirmarPedido()">
         <mat-form-field class="form-full-width" style="margin-bottom:16px">
           <mat-label>Dirección de entrega</mat-label>
           <textarea matInput formControlName="direccionEnvio" rows="3"
                     placeholder="Calle, número, ciudad, provincia..."></textarea>
+          <mat-icon matSuffix style="color:#94a3b8">home</mat-icon>
           <mat-error>La dirección es requerida</mat-error>
         </mat-form-field>
 
-        <mat-form-field class="form-full-width" style="margin-bottom:24px">
+        <mat-form-field class="form-full-width" style="margin-bottom:28px">
           <mat-label>Observaciones (opcional)</mat-label>
           <textarea matInput formControlName="observaciones" rows="2"
                     placeholder="Instrucciones especiales para la entrega..."></textarea>
@@ -48,7 +60,7 @@
 
         <button mat-raised-button color="primary" type="submit"
                 [disabled]="form.invalid || items.length === 0"
-                style="width:100%;height:50px;font-size:1.1em">
+                style="width:100%;height:52px;font-size:1.05rem;font-weight:700">
           <mat-icon>payment</mat-icon> Confirmar Pedido
         </button>
       </form>
@@ -56,20 +68,24 @@
 
     <!-- Resumen del pedido -->
     <div class="resumen-card">
-      <h2 style="margin-bottom:16px">Resumen del Pedido</h2>
-      <div *ngFor="let item of items" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee">
-        <span>{{ item.repuesto.nombre }} x{{ item.cantidad }}</span>
-        <strong>${{ (item.repuesto.precio * item.cantidad) | number:'1.2-2' }}</strong>
+      <h2 style="font-size:1.1rem;font-weight:700;color:#0f172a;margin-bottom:20px;display:flex;align-items:center;gap:8px">
+        <mat-icon style="color:#f59e0b">shopping_bag</mat-icon>
+        Resumen del Pedido
+      </h2>
+      <div *ngFor="let item of items"
+           style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:.9rem">
+        <span style="color:#475569">{{ item.repuesto.nombre }} <strong style="color:#0f172a">×{{ item.cantidad }}</strong></span>
+        <strong style="color:#0f172a">${{ (item.repuesto.precio * item.cantidad) | number:'1.2-2' }}</strong>
       </div>
       <div style="margin-top:16px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:.9rem;color:#64748b">
           <span>Subtotal:</span><span>${{ subtotal | number:'1.2-2' }}</span>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:.9rem;color:#64748b">
           <span>IVA (12%):</span><span>${{ iva | number:'1.2-2' }}</span>
         </div>
-        <mat-divider style="margin:12px 0"></mat-divider>
-        <div style="display:flex;justify-content:space-between;font-size:1.3em;font-weight:700;color:#1565C0">
+        <mat-divider style="margin:14px 0"></mat-divider>
+        <div style="display:flex;justify-content:space-between;font-size:1.35rem;font-weight:800;color:#1a2f5e">
           <span>TOTAL:</span><span>${{ total | number:'1.2-2' }}</span>
         </div>
       </div>

@@ -1,14 +1,19 @@
 <div class="perfil-container">
-  <h1>Mi Perfil</h1>
+  <div style="margin-bottom:32px;animation:slideInL .4s ease">
+    <h1 style="font-size:2rem;font-weight:800;color:#0f172a;letter-spacing:-.03em">Mi Perfil</h1>
+    <div style="width:40px;height:4px;background:#f59e0b;border-radius:2px;margin-top:6px"></div>
+  </div>
 
   <!-- Datos personales -->
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>person</mat-icon> Datos personales
-      </mat-card-title>
+  <mat-card style="margin-bottom:24px;padding:28px">
+    <mat-card-header style="margin-bottom:20px">
+      <div mat-card-avatar style="background:linear-gradient(135deg,#1a2f5e,#2563eb);border-radius:50%;display:flex;align-items:center;justify-content:center">
+        <mat-icon style="color:white;font-size:20px">person</mat-icon>
+      </div>
+      <mat-card-title style="font-size:1.1rem;font-weight:700;color:#0f172a">Datos personales</mat-card-title>
+      <mat-card-subtitle style="color:#64748b">Actualiza tu información personal</mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content style="margin-top:16px">
+    <mat-card-content>
       <form [formGroup]="datosForm" (ngSubmit)="guardarDatos()">
         <div class="form-grid">
           <mat-form-field>
@@ -24,15 +29,19 @@
           <mat-form-field>
             <mat-label>Teléfono</mat-label>
             <input matInput formControlName="telefono">
+            <mat-icon matSuffix style="color:#94a3b8">phone</mat-icon>
           </mat-form-field>
           <mat-form-field>
             <mat-label>Dirección</mat-label>
             <input matInput formControlName="direccion">
+            <mat-icon matSuffix style="color:#94a3b8">home</mat-icon>
           </mat-form-field>
         </div>
         <button mat-raised-button color="primary" type="submit"
-                [disabled]="datosForm.invalid || cargandoDatos">
+                [disabled]="datosForm.invalid || cargandoDatos"
+                style="height:44px">
           <mat-spinner *ngIf="cargandoDatos" diameter="18" style="display:inline-block;margin-right:8px"></mat-spinner>
+          <mat-icon *ngIf="!cargandoDatos">save</mat-icon>
           Guardar cambios
         </button>
       </form>
@@ -40,37 +49,41 @@
   </mat-card>
 
   <!-- Cambiar contraseña -->
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>lock</mat-icon> Cambiar contraseña
-      </mat-card-title>
+  <mat-card style="padding:28px">
+    <mat-card-header style="margin-bottom:20px">
+      <div mat-card-avatar style="background:linear-gradient(135deg,#374151,#6b7280);border-radius:50%;display:flex;align-items:center;justify-content:center">
+        <mat-icon style="color:white;font-size:20px">lock</mat-icon>
+      </div>
+      <mat-card-title style="font-size:1.1rem;font-weight:700;color:#0f172a">Cambiar contraseña</mat-card-title>
+      <mat-card-subtitle style="color:#64748b">Mantén tu cuenta segura</mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content style="margin-top:16px">
+    <mat-card-content>
       <form [formGroup]="passwordForm" (ngSubmit)="cambiarPassword()">
         <mat-form-field class="form-full-width" style="margin-bottom:12px">
           <mat-label>Contraseña actual</mat-label>
           <input matInput [type]="mostrarPasswordActual ? 'text' : 'password'" formControlName="passwordActual">
           <button mat-icon-button matSuffix type="button" (click)="mostrarPasswordActual = !mostrarPasswordActual">
-            <mat-icon>{{ mostrarPasswordActual ? 'visibility_off' : 'visibility' }}</mat-icon>
+            <mat-icon style="color:#94a3b8">{{ mostrarPasswordActual ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
         </mat-form-field>
         <mat-form-field class="form-full-width" style="margin-bottom:12px">
           <mat-label>Nueva contraseña</mat-label>
           <input matInput [type]="mostrarNuevaPassword ? 'text' : 'password'" formControlName="nuevaPassword">
           <button mat-icon-button matSuffix type="button" (click)="mostrarNuevaPassword = !mostrarNuevaPassword">
-            <mat-icon>{{ mostrarNuevaPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            <mat-icon style="color:#94a3b8">{{ mostrarNuevaPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
           <mat-error *ngIf="passwordForm.get('nuevaPassword')?.hasError('minlength')">Mínimo 6 caracteres</mat-error>
         </mat-form-field>
-        <mat-form-field class="form-full-width" style="margin-bottom:16px">
+        <mat-form-field class="form-full-width" style="margin-bottom:20px">
           <mat-label>Confirmar nueva contraseña</mat-label>
           <input matInput type="password" formControlName="confirmarPassword">
           <mat-error *ngIf="passwordForm.hasError('noCoinciden')">Las contraseñas no coinciden</mat-error>
         </mat-form-field>
         <button mat-raised-button color="primary" type="submit"
-                [disabled]="passwordForm.invalid || cargandoPassword">
+                [disabled]="passwordForm.invalid || cargandoPassword"
+                style="height:44px">
           <mat-spinner *ngIf="cargandoPassword" diameter="18" style="display:inline-block;margin-right:8px"></mat-spinner>
+          <mat-icon *ngIf="!cargandoPassword">lock_reset</mat-icon>
           Cambiar contraseña
         </button>
       </form>

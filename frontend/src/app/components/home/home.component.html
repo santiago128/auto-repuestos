@@ -1,14 +1,40 @@
 <div class="hero">
-  <h1>Tu tienda de repuestos automotrices</h1>
-  <p>Encuentra los repuestos que necesitas para tu vehículo al mejor precio</p>
-  <button mat-raised-button color="accent" (click)="irACatalogo()">
-    <mat-icon>search</mat-icon> Ver Catálogo Completo
-  </button>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <mat-icon style="font-size:14px;width:14px;height:14px">verified</mat-icon>
+      Repuestos originales y de calidad
+    </div>
+    <h1>El repuesto que necesitas,<br>al mejor precio</h1>
+    <p>Más de 10,000 repuestos para todas las marcas. Envío rápido y garantía en cada producto.</p>
+    <div class="hero-ctas">
+      <button mat-raised-button color="accent" (click)="irACatalogo()" style="height:50px;padding:0 28px;font-size:1rem">
+        <mat-icon>search</mat-icon> Ver Catálogo Completo
+      </button>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-value">10k+</span>
+      <span class="stat-label">Repuestos</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">24h</span>
+      <span class="stat-label">Entrega rápida</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">100%</span>
+      <span class="stat-label">Garantía</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">5★</span>
+      <span class="stat-label">Calificación</span>
+    </div>
+  </div>
 </div>
 
 <!-- Búsqueda por vehículo -->
 <section class="vehiculo-search">
-  <h2><mat-icon style="vertical-align:middle">directions_car</mat-icon> Busca repuestos para tu vehículo</h2>
+  <h2><mat-icon>directions_car</mat-icon> Encuentra repuestos para tu vehículo</h2>
   <div class="vehiculo-row">
     <mat-form-field class="vehiculo-field">
       <mat-label>Marca del vehículo</mat-label>
@@ -26,14 +52,15 @@
       </mat-select>
     </mat-form-field>
 
-    <button mat-raised-button color="primary" style="height:56px"
+    <button mat-raised-button color="primary" style="height:56px;padding:0 24px"
             [disabled]="!marcaSeleccionada"
             (click)="buscarPorVehiculo()">
-      <mat-icon>search</mat-icon> Ver repuestos compatibles
+      <mat-icon>search</mat-icon> Ver repuestos
     </button>
   </div>
 </section>
 
+<!-- Buscar por marca -->
 <section class="featured-section">
   <h2>Buscar por Marca</h2>
   <div class="marcas-row">
@@ -43,6 +70,7 @@
   </div>
 </section>
 
+<!-- Repuestos destacados -->
 <section class="featured-section">
   <h2>Repuestos Destacados</h2>
   <div class="productos-grid">
@@ -51,7 +79,7 @@
         <mat-card-title>{{ r.nombre }}</mat-card-title>
         <mat-card-subtitle>
           <span class="marca-chip">{{ r.marca?.nombre }}</span>
-          <span *ngIf="r.modelo"> · {{ r.modelo?.nombre }}</span>
+          <span *ngIf="r.modelo" style="color:#94a3b8;font-size:.8rem"> · {{ r.modelo?.nombre }}</span>
         </mat-card-subtitle>
       </mat-card-header>
       <img mat-card-image
@@ -63,11 +91,11 @@
         <p [class.stock-ok]="r.stock > 5"
            [class.stock-bajo]="r.stock > 0 && r.stock <= 5"
            [class.stock-agotado]="r.stock === 0">
-          {{ r.stock > 0 ? 'Stock: ' + r.stock : 'Agotado' }}
+          {{ r.stock > 0 ? 'En stock: ' + r.stock : 'Agotado' }}
         </p>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="primary" routerLink="/repuesto/{{r.id}}">
+        <button mat-raised-button color="primary" routerLink="/repuesto/{{r.id}}" style="width:100%">
           Ver Detalle
         </button>
       </mat-card-actions>

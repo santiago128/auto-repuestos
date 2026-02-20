@@ -1,34 +1,49 @@
-<h1>Mis Favoritos</h1>
+<div style="margin-bottom:28px;animation:slideInL .4s ease">
+  <h1 style="font-size:2rem;font-weight:800;color:#0f172a;letter-spacing:-.03em">
+    Mis Favoritos
+    <mat-icon color="warn" style="vertical-align:middle;font-size:1.6rem;margin-left:8px">favorite</mat-icon>
+  </h1>
+  <div style="width:40px;height:4px;background:#f59e0b;border-radius:2px;margin-top:6px"></div>
+</div>
 
-<div *ngIf="cargando" style="text-align:center;padding:40px">
-  <mat-spinner diameter="40" style="margin:auto"></mat-spinner>
+<div *ngIf="cargando" style="text-align:center;padding:60px">
+  <mat-spinner diameter="44" style="margin:auto"></mat-spinner>
 </div>
 
 <div *ngIf="!cargando && repuestos.length === 0" class="no-results">
-  <mat-icon style="font-size:64px;width:64px;height:64px;color:#ddd">favorite_border</mat-icon>
-  <h2>No tienes favoritos aún</h2>
-  <p>Explora el catálogo y guarda los repuestos que te interesen.</p>
-  <button mat-raised-button color="primary" routerLink="/catalogo" style="margin-top:16px">
-    Ver Catálogo
+  <mat-icon style="font-size:64px;width:64px;height:64px;color:#cbd5e1">favorite_border</mat-icon>
+  <h2 style="color:#475569;margin:16px 0 8px">No tienes favoritos aún</h2>
+  <p>Explora el catálogo y guarda los repuestos que te interesen</p>
+  <button mat-raised-button color="primary" routerLink="/catalogo" style="margin-top:20px">
+    <mat-icon>storefront</mat-icon> Ver Catálogo
   </button>
 </div>
 
-<div class="productos-grid" *ngIf="!cargando">
+<div class="productos-grid" *ngIf="!cargando && repuestos.length > 0">
   <mat-card *ngFor="let r of repuestos" class="producto-card" routerLink="/repuesto/{{r.id}}">
+    <!-- Botón quitar favorito -->
+    <button mat-icon-button color="warn" class="fav-btn"
+            (click)="toggleFavorito(r, $event)"
+            matTooltip="Quitar de favoritos">
+      <mat-icon>favorite</mat-icon>
+    </button>
+
     <mat-card-header>
       <mat-card-title>{{ r.nombre }}</mat-card-title>
       <mat-card-subtitle>
         <span class="marca-chip">{{ r.marca?.nombre }}</span>
-        <span *ngIf="r.modelo"> · {{ r.modelo?.nombre }}</span>
-        <span *ngIf="r.categoria"> · {{ r.categoria?.nombre }}</span>
+        <span *ngIf="r.modelo" style="color:#94a3b8;font-size:.8rem"> · {{ r.modelo?.nombre }}</span>
+        <span *ngIf="r.categoria"> &nbsp;<span class="categoria-chip">{{ r.categoria?.nombre }}</span></span>
       </mat-card-subtitle>
     </mat-card-header>
+
     <img mat-card-image
          [src]="r.imagenUrl || 'assets/repuesto-default.png'"
          [alt]="r.nombre"
          onerror="this.src='assets/repuesto-default.png'">
+
     <mat-card-content>
-      <p style="color:#666;font-size:.85em;margin-bottom:8px">Cód: {{ r.codigo }}</p>
+      <p style="color:#94a3b8;font-size:.78rem;margin-bottom:8px;font-family:monospace">{{ r.codigo }}</p>
       <p class="precio-tag">${{ r.precio | number:'1.2-2' }}</p>
       <p [class.stock-ok]="r.stock > 5"
          [class.stock-bajo]="r.stock > 0 && r.stock <= 5"
@@ -36,15 +51,16 @@
         {{ r.stock > 0 ? 'En stock: ' + r.stock : 'Agotado' }}
       </p>
     </mat-card-content>
-    <mat-card-actions>
-      <button mat-button color="primary" routerLink="/repuesto/{{r.id}}">Detalle</button>
-      <button mat-icon-button color="warn" (click)="toggleFavorito(r, $event)" matTooltip="Quitar de favoritos">
-        <mat-icon>favorite</mat-icon>
+
+    <mat-card-actions style="display:flex;gap:8px;padding:8px 16px 16px">
+      <button mat-stroked-button color="primary" routerLink="/repuesto/{{r.id}}" (click)="$event.stopPropagation()">
+        Detalle
       </button>
       <button mat-raised-button color="primary"
               [disabled]="r.stock === 0"
+              style="flex:1"
               (click)="agregarAlCarrito(r, $event)">
-        <mat-icon>add_shopping_cart</mat-icon>
+        <mat-icon style="font-size:18px">add_shopping_cart</mat-icon>
       </button>
     </mat-card-actions>
   </mat-card>

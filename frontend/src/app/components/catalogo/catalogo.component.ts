@@ -13,13 +13,42 @@ import { Repuesto, Marca, Modelo, Categoria } from '../../models/repuesto.model'
   selector: 'app-catalogo',
   templateUrl: './catalogo.component.html',
   styles: [`
-    .filtros { background:white; padding:16px; border-radius:8px; margin-bottom:20px; display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
-    .filtro-field { min-width:180px; }
-    h1 { font-size:2em; color:#1565C0; margin-bottom:8px; }
-    .no-results { text-align:center; padding:40px; color:#888; }
-    .paginator-container { display:flex; justify-content:center; margin-top:20px; }
-    .fav-btn { position:absolute; top:8px; right:8px; }
-    .producto-card { position:relative; }
+    .catalog-header {
+      margin-bottom: 24px;
+      animation: slideInL .4s ease;
+    }
+    .catalog-header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -.03em;
+    }
+    .catalog-header h1::after {
+      content: '';
+      display: block;
+      width: 40px; height: 4px;
+      background: #f59e0b;
+      border-radius: 2px;
+      margin-top: 6px;
+    }
+    .filtros {
+      background: white;
+      padding: 18px 22px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      border: 1px solid #e2e8f0;
+      animation: slideUp .45s ease;
+    }
+    .filtro-field { flex: 1; min-width: 180px; }
+    .fav-btn { position: absolute; top: 8px; right: 8px; }
+    .producto-card { position: relative; }
+    @keyframes slideInL { from{opacity:0;transform:translateX(-24px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes slideUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
   `]
 })
 export class CatalogoComponent implements OnInit {

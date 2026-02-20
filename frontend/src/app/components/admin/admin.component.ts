@@ -10,21 +10,76 @@ import { Factura } from '../../models/factura.model';
   selector: 'app-admin',
   templateUrl: './admin.component.html',
   styles: [`
-    .admin-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-    mat-tab-group { background:white; border-radius:8px; }
-    .tab-content { padding:20px; }
-    .tabla-repuestos { width:100%; }
-    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .form-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
-    .upload-area { display:flex; align-items:center; gap:16px; margin:8px 0 16px; }
-    .img-preview { width:80px; height:80px; object-fit:cover; border-radius:8px; border:1px solid #ddd; }
-    .img-placeholder { width:80px; height:80px; display:flex; align-items:center; justify-content:center; background:#f5f5f5; border-radius:8px; border:1px dashed #ccc; color:#aaa; }
-    .thumb-tabla { width:40px; height:40px; object-fit:cover; border-radius:4px; }
-    .estado-PAGADA { color:#1565C0; }
-    .estado-EN_PROCESO { color:#e65100; }
-    .estado-ENVIADO { color:#6a1b9a; }
-    .estado-ENTREGADO { color:#2e7d32; }
-    .estado-CANCELADO { color:#c62828; }
+    .admin-page-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -.03em;
+      margin-bottom: 24px;
+    }
+    .admin-page-title::after {
+      content: '';
+      display: block;
+      width: 40px; height: 4px;
+      background: #f59e0b;
+      border-radius: 2px;
+      margin-top: 6px;
+    }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    mat-tab-group {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.07);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+    }
+    .tab-content { padding: 24px; }
+    .tabla-repuestos { width: 100%; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .upload-area {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin: 10px 0 18px;
+      padding: 14px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px dashed #cbd5e1;
+    }
+    .img-preview {
+      width: 88px; height: 88px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 6px rgba(0,0,0,.08);
+    }
+    .img-placeholder {
+      width: 88px; height: 88px;
+      display: flex; align-items: center; justify-content: center;
+      background: #f1f5f9;
+      border-radius: 10px;
+      border: 2px dashed #cbd5e1;
+      color: #94a3b8;
+    }
+    .thumb-tabla {
+      width: 44px; height: 44px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .estado-PAGADA     { color: #1d4ed8; font-weight: 600; }
+    .estado-EN_PROCESO { color: #b45309; font-weight: 600; }
+    .estado-ENVIADO    { color: #7c3aed; font-weight: 600; }
+    .estado-ENTREGADO  { color: #065f46; font-weight: 600; }
+    .estado-CANCELADO  { color: #991b1b; font-weight: 600; }
   `]
 })
 export class AdminComponent implements OnInit {

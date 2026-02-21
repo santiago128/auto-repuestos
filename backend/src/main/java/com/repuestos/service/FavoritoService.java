@@ -30,11 +30,12 @@ public class FavoritoService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        String accion = (String) em.createNativeQuery(
+        Object raw = em.createNativeQuery(
                 "SELECT * FROM sp_toggle_favorito(:usuarioId, :repuestoId)")
                 .setParameter("usuarioId", usuario.getId())
                 .setParameter("repuestoId", repuestoId)
                 .getSingleResult();
+        String accion = (raw instanceof Object[]) ? ((Object[]) raw)[0].toString() : raw.toString();
 
         Map<String, Object> resp = new HashMap<>();
         resp.put("accion", accion);

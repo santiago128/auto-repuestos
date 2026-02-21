@@ -37,10 +37,11 @@
       </mat-card-subtitle>
     </mat-card-header>
 
-    <img mat-card-image
-         [src]="r.imagenUrl || 'assets/repuesto-default.png'"
-         [alt]="r.nombre"
-         onerror="this.src='assets/repuesto-default.png'">
+    <div class="card-img-wrap">
+      <img [src]="r.imagenUrl || 'assets/repuesto-default.png'"
+           [alt]="r.nombre"
+           onerror="this.src='assets/repuesto-default.png'">
+    </div>
 
     <mat-card-content>
       <p style="color:#94a3b8;font-size:.78rem;margin-bottom:8px;font-family:monospace">{{ r.codigo }}</p>

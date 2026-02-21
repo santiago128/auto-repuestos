@@ -75,6 +75,15 @@
   <h2>Repuestos Destacados</h2>
   <div class="productos-grid">
     <mat-card *ngFor="let r of featuredRepuestos" class="producto-card" routerLink="/repuesto/{{r.id}}">
+
+      <!-- Botón favorito -->
+      <button mat-icon-button class="fav-btn"
+              [color]="esFavorito(r.id) ? 'warn' : ''"
+              (click)="toggleFavorito(r, $event)"
+              [matTooltip]="esFavorito(r.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'">
+        <mat-icon>{{ esFavorito(r.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+      </button>
+
       <mat-card-header>
         <mat-card-title>{{ r.nombre }}</mat-card-title>
         <mat-card-subtitle>
@@ -82,10 +91,13 @@
           <span *ngIf="r.modelo" style="color:#94a3b8;font-size:.8rem"> · {{ r.modelo?.nombre }}</span>
         </mat-card-subtitle>
       </mat-card-header>
-      <img mat-card-image
-           [src]="r.imagenUrl || 'assets/repuesto-default.png'"
-           [alt]="r.nombre"
-           onerror="this.src='assets/repuesto-default.png'">
+
+      <div class="card-img-wrap">
+        <img [src]="r.imagenUrl || 'assets/repuesto-default.png'"
+             [alt]="r.nombre"
+             onerror="this.src='assets/repuesto-default.png'">
+      </div>
+
       <mat-card-content>
         <p class="precio-tag">${{ r.precio | number:'1.2-2' }}</p>
         <p [class.stock-ok]="r.stock > 5"
@@ -95,7 +107,8 @@
         </p>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="primary" routerLink="/repuesto/{{r.id}}" style="width:100%">
+        <button mat-raised-button color="primary" routerLink="/repuesto/{{r.id}}" style="width:100%"
+                (click)="$event.stopPropagation()">
           Ver Detalle
         </button>
       </mat-card-actions>

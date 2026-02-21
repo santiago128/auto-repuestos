@@ -9,7 +9,16 @@ import { UsuarioSession } from '../../models/auth.model';
   templateUrl: './navbar.component.html',
   styles: [`
     .spacer { flex: 1 1 auto; }
-    .brand { font-size: 1.2em; font-weight: 700; text-decoration: none; color: white; }
+    .brand {
+      font-size: 1.2em;
+      font-weight: 700;
+      text-decoration: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand img { border-radius: 8px; }
     .nav-user { font-size: 0.9em; margin-right: 8px; }
   `]
 })

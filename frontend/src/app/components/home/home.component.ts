@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { RepuestoService } from '../../services/repuesto.service';
+import { FavoritoService } from '../../services/favorito.service';
+import { AuthService } from '../../services/auth.service';
 import { Repuesto, Marca, Modelo } from '../../models/repuesto.model';
 
 @Component({
@@ -155,8 +158,16 @@ export class HomeComponent implements OnInit {
   modelosVehiculo: Modelo[] = [];
   marcaSeleccionada: number | null = null;
   modeloSeleccionado: number | null = null;
+  favoritosIds = new Set<number>();
+  logueado = false;
 
-  constructor(private repuestoSvc: RepuestoService, private router: Router) {}
+  constructor(
+    private repuestoSvc: RepuestoService,
+    private router: Router,
+    private favoritoSvc: FavoritoService,
+    private authSvc: AuthService,
+    private snack: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.repuestoSvc.getRepuestos().subscribe(res => {
@@ -170,6 +181,10 @@ export class HomeComponent implements OnInit {
     this.repuestoSvc.getMarcas().subscribe(res => {
       this.marcas = res.data ?? [];
     });
+
+    this.logueado = this.authSvc.isLoggedIn();
+    this.authSvc.session$.subscribe(s => { this.logueado = !!s; });
+    this.favoritoSvc.getFavoritosIds$().subscribe(ids => this.favoritosIds = ids);
   }
 
   onMarcaVehiculoChange(marcaId: number | null): void {
@@ -192,4 +207,25 @@ export class HomeComponent implements OnInit {
   }
 
   irACatalogo(): void { this.router.navigate(['/catalogo']); }
+
+  toggleFavorito(repuesto: Repuesto, event: Event): void {
+    event.stopPropagation();
+    if (!this.logueado) {
+      this.snack.open('Inicia sesión para guardar favoritos', 'OK', { duration: 2500 });
+      return;
+    }
+    this.favoritoSvc.toggleFavorito(repuesto.id).subscribe({
+      next: r => {
+        const accion = r.data?.accion;
+        this.snack.open(
+          accion === 'AGREGADO' ? 'Agregado a favoritos ❤' : 'Eliminado de favoritos',
+          'OK', { duration: 2000 }
+        );
+      }
+    });
+  }
+
+  esFavorito(id: number): boolean {
+    return this.favoritosIds.has(id);
+  }
 }

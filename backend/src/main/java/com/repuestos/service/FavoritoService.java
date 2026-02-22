@@ -1,18 +1,18 @@
 package com.repuestos.service;
 
+import com.repuestos.model.Favorito;
 import com.repuestos.model.Repuesto;
 import com.repuestos.model.Usuario;
 import com.repuestos.repository.FavoritoRepository;
+import com.repuestos.repository.RepuestoRepository;
 import com.repuestos.repository.UsuarioRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,21 +21,26 @@ public class FavoritoService {
 
     private final FavoritoRepository favoritoRepository;
     private final UsuarioRepository usuarioRepository;
-
-    @PersistenceContext
-    private EntityManager em;
+    private final RepuestoRepository repuestoRepository;
 
     @Transactional
     public Map<String, Object> toggleFavorito(String email, Integer repuestoId) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        Object raw = em.createNativeQuery(
-                "SELECT * FROM sp_toggle_favorito(:usuarioId, :repuestoId)")
-                .setParameter("usuarioId", usuario.getId())
-                .setParameter("repuestoId", repuestoId)
-                .getSingleResult();
-        String accion = (raw instanceof Object[]) ? ((Object[]) raw)[0].toString() : raw.toString();
+        String accion;
+        if (favoritoRepository.existsByUsuarioIdAndRepuestoId(usuario.getId(), repuestoId)) {
+            favoritoRepository.deleteByUsuarioIdAndRepuestoId(usuario.getId(), repuestoId);
+            accion = "ELIMINADO";
+        } else {
+            Repuesto repuesto = repuestoRepository.findById(repuestoId)
+                    .orElseThrow(() -> new RuntimeException("Repuesto no encontrado"));
+            Favorito favorito = new Favorito();
+            favorito.setUsuario(usuario);
+            favorito.setRepuesto(repuesto);
+            favoritoRepository.save(favorito);
+            accion = "AGREGADO";
+        }
 
         Map<String, Object> resp = new HashMap<>();
         resp.put("accion", accion);

@@ -217,10 +217,23 @@ export class HomeComponent implements OnInit {
     this.favoritoSvc.toggleFavorito(repuesto.id).subscribe({
       next: r => {
         const accion = r.data?.accion;
+        // Actualizar Set local para que el ícono cambie inmediatamente
+        const updated = new Set(this.favoritosIds);
+        if (accion === 'AGREGADO') {
+          updated.add(repuesto.id);
+        } else {
+          updated.delete(repuesto.id);
+        }
+        this.favoritosIds = updated;
         this.snack.open(
-          accion === 'AGREGADO' ? 'Agregado a favoritos ❤' : 'Eliminado de favoritos',
+          accion === 'AGREGADO' ? 'Agregado a favoritos' : 'Eliminado de favoritos',
           'OK', { duration: 2000 }
         );
+      },
+      error: () => {
+        this.snack.open('Error al actualizar favoritos. Intenta de nuevo.', 'OK', {
+          duration: 3000, panelClass: 'snack-error'
+        });
       }
     });
   }

@@ -45,8 +45,6 @@ import { Repuesto, Marca, Modelo, Categoria } from '../../models/repuesto.model'
       animation: slideUp .45s ease;
     }
     .filtro-field { flex: 1; min-width: 180px; }
-    .fav-btn { position: absolute; top: 8px; right: 8px; }
-    .producto-card { position: relative; }
     @keyframes slideInL { from{opacity:0;transform:translateX(-24px)} to{opacity:1;transform:translateX(0)} }
     @keyframes slideUp  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
   `]
@@ -174,10 +172,23 @@ export class CatalogoComponent implements OnInit {
     this.favoritoSvc.toggleFavorito(repuesto.id).subscribe({
       next: r => {
         const accion = r.data?.accion;
+        // Actualizar Set local para que el ícono cambie inmediatamente
+        const updated = new Set(this.favoritosIds);
+        if (accion === 'AGREGADO') {
+          updated.add(repuesto.id);
+        } else {
+          updated.delete(repuesto.id);
+        }
+        this.favoritosIds = updated;
         this.snack.open(
           accion === 'AGREGADO' ? 'Agregado a favoritos' : 'Eliminado de favoritos',
           'OK', { duration: 2000 }
         );
+      },
+      error: () => {
+        this.snack.open('Error al actualizar favoritos. Intenta de nuevo.', 'OK', {
+          duration: 3000, panelClass: 'snack-error'
+        });
       }
     });
   }

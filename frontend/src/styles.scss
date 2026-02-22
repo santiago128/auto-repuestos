@@ -138,6 +138,17 @@ body {
 .mat-ink-bar { background-color: var(--c-accent) !important; }
 
 /* ═══════════════════════════════════════════════
+   BADGE — carrito navbar
+═══════════════════════════════════════════════ */
+/* Bajamos el badge del carrito para que quede dentro del área del botón */
+.mat-toolbar .mat-badge-above .mat-badge-content {
+  top: 0 !important;
+}
+.mat-toolbar .mat-badge-after .mat-badge-content {
+  right: 0 !important;
+}
+
+/* ═══════════════════════════════════════════════
    NAVBAR
 ═══════════════════════════════════════════════ */
 .brand {
@@ -191,12 +202,17 @@ body {
   }
 }
 
-/* Image wrapper — clips the scale effect so it never overlaps the price */
+/* Image wrapper — contiene imagen + botón favorito */
 .card-img-wrap {
-  overflow: hidden;
+  position: relative;
   height: 200px;
   margin: 0 -16px;
   flex-shrink: 0;
+}
+/* Inner clip: solo la imagen se recorta en el zoom, el botón no */
+.card-img-inner {
+  overflow: hidden;
+  height: 100%;
 }
 .card-img-wrap img {
   width: 100%;
@@ -207,7 +223,7 @@ body {
   display: block;
   transition: transform var(--t);
 }
-.producto-card:hover .card-img-wrap img { transform: scale(1.06); }
+.producto-card:hover .card-img-inner img { transform: scale(1.06); }
 
 /* Legacy fallback for any img without wrapper */
 .producto-card > img {
@@ -226,10 +242,10 @@ body {
 .productos-grid .producto-card:nth-child(5) { animation-delay: .20s; }
 .productos-grid .producto-card:nth-child(6) { animation-delay: .24s; }
 
-/* Favorite button overlay */
+/* Favorite button overlay — posicionado dentro de .card-img-wrap */
 .fav-btn {
   position: absolute !important;
-  top: 8px; right: 8px;
+  top: 8px; right: 16px;
   z-index: 2;
   background: rgba(255,255,255,.9) !important;
   box-shadow: var(--sh-sm);

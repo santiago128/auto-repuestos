@@ -114,6 +114,30 @@ CREATE TABLE IF NOT EXISTS detalle_factura (
 );
 
 -- ============================================================
+-- TABLA: Tokens de recuperación de contraseña
+-- ============================================================
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id         SERIAL PRIMARY KEY,
+    usuario_id INTEGER      NOT NULL REFERENCES usuarios(id),
+    token      VARCHAR(255) UNIQUE NOT NULL,
+    expira_en  TIMESTAMP    NOT NULL,
+    usado      BOOLEAN      DEFAULT FALSE,
+    created_at TIMESTAMP    DEFAULT NOW()
+);
+
+-- ============================================================
+-- TABLA: Favoritos (usuario ↔ repuesto, sin duplicados)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS favoritos (
+    id          SERIAL PRIMARY KEY,
+    usuario_id  INTEGER   NOT NULL REFERENCES usuarios(id),
+    repuesto_id INTEGER   NOT NULL REFERENCES repuestos(id),
+    created_at  TIMESTAMP DEFAULT NOW(),
+    UNIQUE(usuario_id, repuesto_id)
+);
+
+
+-- ============================================================
 -- DATOS INICIALES DE DEMOSTRACIÓN
 -- ============================================================
 

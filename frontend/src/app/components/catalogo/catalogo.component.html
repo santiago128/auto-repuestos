@@ -57,13 +57,6 @@
 <!-- Grid de productos -->
 <div class="productos-grid" *ngIf="!cargando">
   <mat-card *ngFor="let r of repuestos" class="producto-card" routerLink="/repuesto/{{r.id}}">
-    <!-- Botón favorito -->
-    <button mat-icon-button class="fav-btn"
-            [color]="esFavorito(r.id) ? 'warn' : ''"
-            (click)="toggleFavorito(r, $event)"
-            [matTooltip]="esFavorito(r.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'">
-      <mat-icon>{{ esFavorito(r.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
-    </button>
 
     <mat-card-header>
       <mat-card-title>{{ r.nombre }}</mat-card-title>
@@ -74,10 +67,19 @@
       </mat-card-subtitle>
     </mat-card-header>
 
+    <!-- Imagen con botón favorito flotando sobre ella -->
     <div class="card-img-wrap">
-      <img [src]="r.imagenUrl || 'assets/repuesto-default.png'"
-           [alt]="r.nombre"
-           onerror="this.src='assets/repuesto-default.png'">
+      <div class="card-img-inner">
+        <img [src]="r.imagenUrl || 'assets/repuesto-default.png'"
+             [alt]="r.nombre"
+             onerror="this.src='assets/repuesto-default.png'">
+      </div>
+      <button mat-icon-button class="fav-btn"
+              [color]="esFavorito(r.id) ? 'warn' : ''"
+              (click)="toggleFavorito(r, $event)"
+              [matTooltip]="esFavorito(r.id) ? 'Quitar de favoritos' : 'Agregar a favoritos'">
+        <mat-icon>{{ esFavorito(r.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+      </button>
     </div>
 
     <mat-card-content>

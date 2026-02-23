@@ -200,3 +200,13 @@ VALUES ('TOY-COR-FP-001', 'Filtro de Aceite Toyota Corolla', 'Filtro de aceite o
        ('HYU-TUC-FPA-001', 'Filtro de Aire Hyundai Tucson', 'Filtro de aire original Hyundai Tucson', 18.00, 40, 4, 11, 7),
        ('TOY-COR-BUJ-001', 'Bujías Toyota Corolla (x4)', 'Juego de 4 bujías NGK para Toyota Corolla', 32.00, 60, 1, 1, 1),
        ('CHE-SAI-EMB-001', 'Kit de Embrague Chevrolet Sail', 'Kit completo de embrague para Chevrolet Sail', 180.00, 10, 2, 6, 5);
+
+-- Garantizar precios correctos por si hay inconsistencias de locale
+UPDATE repuestos SET precio = 12.50  WHERE codigo = 'TOY-COR-FP-001'  AND precio != 12.50;
+UPDATE repuestos SET precio = 45.00  WHERE codigo = 'TOY-HIL-PAS-001' AND precio != 45.00;
+UPDATE repuestos SET precio = 85.00  WHERE codigo = 'TOY-COR-AMO-001' AND precio != 85.00;
+UPDATE repuestos SET precio = 95.00  WHERE codigo = 'CHE-AVE-BAT-001' AND precio != 95.00;
+UPDATE repuestos SET precio = 120.00 WHERE codigo = 'FOR-RAN-DIS-001' AND precio != 120.00;
+UPDATE repuestos SET precio = 18.00  WHERE codigo = 'HYU-TUC-FPA-001' AND precio != 18.00;
+UPDATE repuestos SET precio = 32.00  WHERE codigo = 'TOY-COR-BUJ-001' AND precio != 32.00;
+UPDATE repuestos SET precio = 180.00 WHERE codigo = 'CHE-SAI-EMB-001' AND precio != 180.00;
